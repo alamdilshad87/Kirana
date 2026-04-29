@@ -76,10 +76,6 @@ async function tryBackendLogin(username, password) {
 
     if (data.token) {
       const shopId = data.shop?.id || null;
-      // Namespace IndexedDB per shop so accounts never share data
-      if (shopId) {
-        localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
-      }
       await saveShopSettings({
         ...(settings || {}),
         ownerPhone,
@@ -189,10 +185,6 @@ async function tryBackendRegisterAndLogin({
 
     if (data.token) {
       const shopId = data.shop?.id || null;
-      // Namespace IndexedDB per shop so accounts never share data
-      if (shopId) {
-        localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
-      }
       const current = await getShopSettings();
       await saveShopSettings({
         ...(current || {}),
@@ -256,8 +248,6 @@ export async function logout() {
   } catch (e) {
     console.warn("[Auth] Could not clear backend token on logout:", e.message);
   }
-  // Remove the shop-scoped DB key so the next login opens a fresh DB namespace
-  localStorage.removeItem("kirana_db_name");
   await clearSession();
   sessionStorage.removeItem("customer_session");
   sessionStorage.removeItem("session");
