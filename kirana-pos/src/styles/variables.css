@@ -1,9 +1,9 @@
 :root {
   /* ── BRAND ── */
-  --bg-primary:   #06080c;
-  --bg-main:      #06080c;
-  --bg-sidebar:   #040508;
-  --bg-card:      rgba(255,255,255,0.018);
+  --bg-primary:   #080d1a;
+  --bg-main:      #080d1a;
+  --bg-sidebar:   #050812;
+  --bg-card:      rgba(255,255,255,0.035);
 
   --primary:             #22C55E;
   --primary-hover:       #16A34A;
@@ -22,9 +22,9 @@
   --danger:  #EF4444;
   --info:    #38BDF8;
 
-  --card-bg:     rgba(255,255,255,0.018);
-  --card-border: rgba(255,255,255,0.06);
-  --card-blur:   blur(24px);
+  --card-bg:     rgba(255,255,255,0.035);
+  --card-border: rgba(255,255,255,0.1);
+  --card-blur:   blur(20px);
 
   /* ── LAYOUT ── */
   --sidebar-width:        260px;

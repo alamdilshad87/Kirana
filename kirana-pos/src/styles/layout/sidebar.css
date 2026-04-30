@@ -146,7 +146,17 @@
 }
 
 .sidebar a .nav-icon {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+}
+
+.sidebar a:hover .nav-icon,
+.sidebar a.active .nav-icon {
+  opacity: 1;
 }
 
 /* ── Hover ── */
