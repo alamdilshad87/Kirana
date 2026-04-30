@@ -6,8 +6,8 @@
 
 /* ---------- DEFAULT: DESKTOP ---------- */
 
-.mobile-header{
-  display:none !important;
+.mobile-header, .mobile-drawer {
+  display: none !important;
 }
 
 .sidebar{
@@ -104,14 +104,10 @@
     touch-action:none;
   }
 
-  /* subtle workspace shift */
-  body.drawer-open .main-content{
-    position:fixed;
-    width:100%;
-    transform:translateX(40px);
-    filter:brightness(.92);
-    transition:transform .16s cubic-bezier(.4,0,.2,1),
-               filter .16s ease;
+  /* No shift on mobile to prevent dual-view confusion */
+  body.drawer-open .main-content {
+    filter: brightness(.4);
+    pointer-events: none;
   }
 
   .main-content{
