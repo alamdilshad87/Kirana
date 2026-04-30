@@ -123,40 +123,71 @@ export async function renderLayout(contentHtml) {
 
     <style>
       .nav-icon-wrap {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
-        margin-right: 12px;
+        font-size: 16px;
+        margin-right: 14px;
         flex-shrink: 0;
       }
       .sidebar a, .drawer-panel a {
         display: flex;
         align-items: center;
-        padding: 10px 16px;
+        padding: 12px 16px;
         color: #94a3b8;
-        font-size: 13px;
-        font-weight: 500;
-        border-radius: 8px;
-        margin: 2px 0;
-        transition: all 0.2s;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 10px;
+        margin: 4px 0;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
       }
       .sidebar a:hover, .drawer-panel a:hover {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.06);
         color: #fff;
+        transform: translateX(4px);
       }
       .sidebar a.active, .drawer-panel a.active {
-        background: rgba(34,197,94,0.1);
+        background: rgba(34,197,94,0.12);
         color: #22c55e;
+        box-shadow: inset 3px 0 0 #22c55e;
+      }
+      .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 24px 20px;
+        margin-bottom: 20px;
+      }
+      .sidebar-brand-icon {
+        width: 40px;
+        height: 40px;
+        background: #22c55e;
+        color: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 20px;
+      }
+      .sidebar-brand-name {
+        display: block;
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
       }
       .sidebar-brand-sub {
+        display: block;
         font-size: 9px;
         color: #64748b;
-        letter-spacing: 1px;
+        letter-spacing: 1.2px;
+        margin-top: 4px;
+        text-transform: uppercase;
       }
     </style>
   `;
