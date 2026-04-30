@@ -3,6 +3,7 @@ import { getAllStock, saveSale, processSale, getShopSettings } from "../services
 import { showToast } from "../utils/toast";
 import { t } from "../i18n/i18n";
 import { navigate } from "../app";
+import { openUPIPayment } from "../components/UPIPaymentOverlay";
 
 export async function renderAddSale() {
   const stock = await getAllStock();
@@ -12,8 +13,6 @@ export async function renderAddSale() {
   let cartItems = [];
   let saleMode = "items"; 
   let selectedPayment = "cash";
-
-  const app = document.getElementById("app");
 
   const content = `
     <section class="add-sale-pro">
@@ -27,7 +26,6 @@ export async function renderAddSale() {
         </div>
 
         <div class="pro-card-body">
-          <!-- SEARCH AREA -->
           <div id="p-item-area">
             <div class="p-search-wrap">
               <input id="p-search" type="text" placeholder="Search product or scan..." autocomplete="off" />
@@ -41,17 +39,15 @@ export async function renderAddSale() {
             </div>
           </div>
 
-          <!-- QUICK AMOUNT AREA -->
           <div id="p-quick-area" style="display:none">
             <input id="p-amount" type="number" placeholder="Enter Amount ₹" class="p-large-input" />
           </div>
 
           <div class="p-divider"></div>
 
-          <!-- PAYMENT & CUSTOMER -->
           <div class="p-footer-grid">
             <div class="p-payment">
-              <label>Payment</label>
+              <label>Payment Method</label>
               <div class="p-pay-toggle">
                 <button class="p-pay-btn active" data-method="cash">Cash</button>
                 <button class="p-pay-btn" data-method="upi">UPI</button>
@@ -60,8 +56,10 @@ export async function renderAddSale() {
             </div>
             
             <div class="p-customer">
-              <label>Customer (Optional)</label>
-              <input id="p-cust" type="text" placeholder="Name or Phone" />
+              <label>Customer Name <span class="req">*</span></label>
+              <input id="p-cust-name" type="text" placeholder="Required" />
+              <label style="margin-top:12px">Mobile Number <span class="req">*</span></label>
+              <input id="p-cust-phone" type="tel" placeholder="Required" maxlength="10" />
             </div>
           </div>
 
@@ -77,11 +75,11 @@ export async function renderAddSale() {
       .add-sale-pro { display: flex; justify-content: center; padding: 20px; }
       .pro-card { 
         width: 100%; max-width: 480px; 
-        background: rgba(10, 15, 30, 0.5); 
+        background: rgba(10, 15, 30, 0.55); 
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 20px; padding: 24px;
         box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-        overflow: visible; /* Prevent internal scrollbar */
+        backdrop-filter: blur(25px);
       }
       
       .pro-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -101,7 +99,8 @@ export async function renderAddSale() {
       .p-drop-item strong { color: #fff; font-size: 13px; }
       .p-drop-item small { color: #64748b; font-size: 11px; }
 
-      .p-cart-list { margin-bottom: 20px; }
+      .p-cart-list { margin-bottom: 20px; max-height: 200px; overflow-y: auto; scrollbar-width: none; }
+      .p-cart-list::-webkit-scrollbar { display: none; }
       .p-empty { text-align: center; color: #475569; font-size: 13px; padding: 10px; }
       .p-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
       .p-item-info { flex: 1; }
@@ -117,12 +116,14 @@ export async function renderAddSale() {
       .p-divider { height: 1px; background: rgba(255,255,255,0.05); margin-bottom: 20px; }
 
       .p-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-      .p-footer-grid label { display: block; font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; }
-      .p-footer-grid input { width: 100%; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 13px; }
+      .p-footer-grid label { display: block; font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 6px; }
+      .p-footer-grid input { width: 100%; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 13px; outline: none; }
+      .p-footer-grid input:focus { border-color: #22c55e; }
+      .req { color: #ef4444; margin-left: 2px; }
 
-      .p-pay-toggle { display: flex; gap: 4px; background: rgba(255,255,255,0.03); padding: 3px; border-radius: 8px; }
-      .p-pay-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #64748b; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 6px; }
-      .p-pay-btn.active { background: rgba(34,197,94,0.1); color: #22c55e; }
+      .p-pay-toggle { display: flex; flex-direction: column; gap: 6px; }
+      .p-pay-btn { width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 8px; text-align: left; transition: 0.2s; }
+      .p-pay-btn.active { background: rgba(34,197,94,0.1); color: #22c55e; border-color: #22c55e33; }
 
       .p-total-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(34,197,94,0.1); border-radius: 16px; border: 1px solid rgba(34,197,94,0.2); }
       .p-total-bar span { color: #fff; font-size: 14px; }
@@ -157,7 +158,7 @@ export async function renderAddSale() {
     updateTotal();
   };
 
-  // Payment
+  // Payment Selection
   document.querySelectorAll(".p-pay-btn").forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll(".p-pay-btn").forEach(b => b.classList.remove("active"));
@@ -166,7 +167,7 @@ export async function renderAddSale() {
     };
   });
 
-  // Search
+  // Search Logic
   const searchInput = document.getElementById("p-search");
   const resultsDiv = document.getElementById("p-results");
   const cartDiv = document.getElementById("p-cart-list");
@@ -244,10 +245,29 @@ export async function renderAddSale() {
     totalVal.textContent = total.toFixed(2);
   }
 
-  // Save
+  // Save Transaction
   document.getElementById("p-save").onclick = async () => {
     const amount = parseFloat(totalVal.textContent);
-    if (!amount || amount <= 0) return showToast("Enter amount", "error");
+    if (!amount || amount <= 0) return showToast("Please enter an amount", "error");
+
+    const custName = document.getElementById("p-cust-name").value.trim();
+    const custPhone = document.getElementById("p-cust-phone").value.trim();
+
+    if (!custName || !custPhone) {
+      showToast("Customer Name and Phone are required", "error");
+      return;
+    }
+
+    if (custPhone.length < 10) {
+      showToast("Please enter a valid 10-digit phone number", "error");
+      return;
+    }
+
+    // UPI Logic
+    if (selectedPayment === "upi") {
+      const confirmed = await openUPIPayment(amount);
+      if (!confirmed) return; // User cancelled UPI
+    }
 
     const btn = document.getElementById("p-save");
     btn.disabled = true;
@@ -258,7 +278,8 @@ export async function renderAddSale() {
       amount,
       paymentMethod: selectedPayment,
       accountType: saleMode === "amount" ? "QUICK_SALE" : "ITEM_SALE",
-      customerName: document.getElementById("p-cust").value.trim() || "Walk-in",
+      customerName: custName,
+      customerPhone: custPhone,
       items: cartItems,
       date: new Date().toLocaleDateString(),
       timestamp: Date.now()
@@ -267,9 +288,25 @@ export async function renderAddSale() {
     try {
       if (saleMode === "items") await processSale(sale);
       else await saveSale(sale);
-      showToast("Success!", "success");
+
+      // Customer Sync
+      const { resolveCustomerIdentity } = await import("../services/customerIdentityService.js");
+      const customer = await resolveCustomerIdentity({ name: custName, phone: custPhone });
+      
+      if (customer?.id) {
+        const { updateCustomerLoyalty } = await import("../services/loyaltyEngine.js");
+        await updateCustomerLoyalty(customer.id, amount);
+        if (shopId) {
+          const { linkCustomerToShop, updateCustomerShopStats } = await import("../services/customerShopService.js");
+          await linkCustomerToShop(customer.id, shopId);
+          await updateCustomerShopStats({ customerId: customer.id, shopId, amount });
+        }
+      }
+
+      showToast("Transaction Completed!", "success");
       navigate("dashboard");
-    } catch {
+    } catch (e) {
+      showToast("Error saving sale", "error");
       btn.disabled = false;
       btn.textContent = "Finalize";
     }
