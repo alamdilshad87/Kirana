@@ -1,6 +1,6 @@
 import { navigate } from "../app";
 
-export async function renderWelcome() {
+export default async function renderWelcome() {
   const container = document.getElementById("app");
   
   const content = `
