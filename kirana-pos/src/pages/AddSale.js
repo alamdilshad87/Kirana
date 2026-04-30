@@ -20,28 +20,30 @@ export async function renderAddSale() {
         <div class="pro-card-header">
           <div class="title-group">
              <h2>Add Transaction</h2>
-             <p class="subtitle-small">Create a new sale entry</p>
+             <p class="subtitle-small">Complete your sale entry below</p>
           </div>
           <div class="pro-tabs">
             <button id="p-tab-items" class="p-tab active">Items Sale</button>
-            <button id="p-tab-quick" class="p-tab">Quick Amount</button>
+            <button id="p-tab-quick" class="p-tab">Quick Sale</button>
           </div>
         </div>
 
         <div class="pro-card-body">
+          <!-- SEARCH & CART -->
           <div id="p-item-area">
             <div class="p-search-wrap">
-              <input id="p-search" type="text" placeholder="Search product name or scan barcode..." autocomplete="off" />
+              <input id="p-search" type="text" placeholder="Search product name or scan..." autocomplete="off" />
               <div id="p-results" class="p-dropdown"></div>
             </div>
 
             <div class="p-cart-container">
               <div id="p-cart-list" class="p-cart-list">
-                <div class="p-empty">Cart is currently empty. Start adding items above.</div>
+                <div class="p-empty">No items in cart.</div>
               </div>
             </div>
           </div>
 
+          <!-- QUICK AMOUNT -->
           <div id="p-quick-area" style="display:none">
             <div class="quick-input-wrap">
               <span class="currency-symbol">₹</span>
@@ -51,28 +53,43 @@ export async function renderAddSale() {
 
           <div class="p-divider"></div>
 
-          <div class="p-footer-grid">
-            <div class="p-column">
-              <label class="p-label">PAYMENT METHOD</label>
-              <div class="p-pay-toggle">
+          <!-- FOOTER: PAYMENT & CUSTOMER -->
+          <div class="p-footer-rows">
+            <!-- Row 1 -->
+            <div class="p-footer-row">
+              <div class="p-col">
+                <label class="p-label">PAYMENT METHOD</label>
                 <button class="p-pay-btn active" data-method="cash">💵 Cash Payment</button>
-                <button class="p-pay-btn" data-method="upi">📱 UPI / QR Scan</button>
-                <button class="p-pay-btn" data-method="credit">💳 Credit (Udhaar)</button>
               </div>
-            </div>
-            
-            <div class="p-column">
-              <div class="p-field">
+              <div class="p-col">
                 <label class="p-label">CUSTOMER NAME <span class="req">*</span></label>
                 <input id="p-cust-name" type="text" placeholder="Full Name" class="formal-input" />
               </div>
-              <div class="p-field" style="margin-top:16px">
+            </div>
+
+            <!-- Row 2 -->
+            <div class="p-footer-row">
+              <div class="p-col">
+                <button class="p-pay-btn" data-method="upi">📱 UPI / QR Scan</button>
+              </div>
+              <div class="p-col">
                 <label class="p-label">MOBILE NUMBER <span class="req">*</span></label>
                 <input id="p-cust-phone" type="tel" placeholder="10-digit number" maxlength="10" class="formal-input" />
               </div>
             </div>
+
+            <!-- Row 3 -->
+            <div class="p-footer-row">
+              <div class="p-col">
+                <button class="p-pay-btn" data-method="credit">💳 Credit (Udhaar)</button>
+              </div>
+              <div class="p-col">
+                <!-- Spacing filler -->
+              </div>
+            </div>
           </div>
 
+          <!-- ACTION BAR -->
           <div class="p-action-bar">
             <div class="total-display">
               <span class="total-label">TOTAL AMOUNT</span>
@@ -89,9 +106,9 @@ export async function renderAddSale() {
     <style>
       .add-sale-pro { display: flex; justify-content: center; padding: 40px 20px; }
       .pro-card { 
-        width: 100%; max-width: 720px; 
-        background: rgba(10, 15, 30, 0.65); 
-        border: 1px solid rgba(255,255,255,0.1);
+        width: 100%; max-width: 760px; 
+        background: rgba(10, 15, 30, 0.6); 
+        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 28px; padding: 40px;
         box-shadow: 0 50px 100px rgba(0,0,0,0.6);
         backdrop-filter: blur(40px);
@@ -100,66 +117,61 @@ export async function renderAddSale() {
       
       .pro-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
       .title-group h2 { font-size: 22px; color: #fff; font-weight: 800; margin: 0; }
-      .subtitle-small { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
+      .subtitle-small { font-size: 12px; color: #64748b; margin-top: 4px; }
       
-      .pro-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; }
-      .p-tab { padding: 8px 20px; border: none; background: transparent; color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 9px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-      .p-tab.active { background: #22c55e; color: #fff; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+      .pro-tabs { display: flex; background: rgba(255,255,255,0.04); padding: 4px; border-radius: 12px; }
+      .p-tab { padding: 8px 18px; border: none; background: transparent; color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 9px; transition: 0.2s; text-transform: uppercase; }
+      .p-tab.active { background: #22c55e; color: #fff; }
 
       .p-search-wrap { position: relative; margin-bottom: 24px; }
-      .p-search-wrap input { width: 100%; padding: 18px 24px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; outline: none; font-size: 16px; transition: 0.2s; }
-      .p-search-wrap input:focus { border-color: #22c55e; background: rgba(255,255,255,0.07); box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
+      .p-search-wrap input { width: 100%; padding: 18px 24px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; outline: none; font-size: 16px; }
+      .p-search-wrap input:focus { border-color: #22c55e; background: rgba(255,255,255,0.08); }
 
-      .p-dropdown { position: absolute; top: 68px; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; z-index: 100; max-height: 240px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+      .p-dropdown { position: absolute; top: 68px; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; z-index: 100; max-height: 200px; overflow-y: auto; }
       .p-drop-item { display: flex; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
       .p-drop-item:hover { background: rgba(255,255,255,0.05); }
-      .p-drop-item strong { color: #fff; font-size: 15px; }
-      .p-drop-item small { color: #64748b; font-size: 13px; }
 
-      .p-cart-container { background: rgba(0,0,0,0.2); border-radius: 18px; padding: 6px; margin-bottom: 32px; }
+      .p-cart-container { background: rgba(0,0,0,0.15); border-radius: 18px; padding: 4px; margin-bottom: 32px; }
       .p-cart-list { padding: 12px; overflow: visible; min-height: 40px; }
-      .p-empty { text-align: center; color: #475569; font-size: 14px; padding: 30px; font-style: italic; }
+      .p-empty { text-align: center; color: #475569; font-size: 14px; padding: 20px; font-style: italic; }
       
-      .p-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: rgba(255,255,255,0.03); border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
-      .p-item-info { flex: 1; }
-      .p-item-info div { color: #f8fafc; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-      .p-item-info small { color: #64748b; font-size: 13px; font-weight: 500; }
+      .p-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); border-radius: 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
+      .p-item-info div { color: #fff; font-size: 15px; font-weight: 600; }
+      .p-item-info small { color: #64748b; font-size: 13px; }
       
-      .p-qty { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-      .p-qty button { width: 36px; height: 36px; border: none; background: transparent; color: #fff; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-      .p-qty button:hover { background: rgba(255,255,255,0.06); }
-      .p-qty span { min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; font-weight: 700; border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
+      .p-qty { display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+      .p-qty button { width: 34px; height: 34px; border: none; background: transparent; color: #fff; font-size: 18px; cursor: pointer; }
+      .p-qty span { min-width: 36px; text-align: center; color: #fff; font-size: 14px; font-weight: 700; border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
 
       .quick-input-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 32px; }
-      .currency-symbol { position: absolute; left: 30px; font-size: 32px; font-weight: 800; color: #22c55e; opacity: 0.6; }
-      .p-large-input { width: 100%; padding: 30px 30px 30px 70px; font-size: 48px; font-weight: 900; background: rgba(34,197,94,0.03); border: 2px dashed rgba(34,197,94,0.25); border-radius: 24px; color: #22c55e; outline: none; text-align: left; }
+      .currency-symbol { position: absolute; left: 30px; font-size: 32px; font-weight: 800; color: #22c55e; opacity: 0.5; }
+      .p-large-input { width: 100%; padding: 24px 24px 24px 70px; font-size: 44px; font-weight: 900; background: rgba(34,197,94,0.02); border: 2px dashed rgba(34,197,94,0.2); border-radius: 20px; color: #22c55e; outline: none; }
       
-      .p-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin-bottom: 32px; }
+      .p-divider { height: 1px; background: rgba(255,255,255,0.08); margin-bottom: 40px; }
 
-      .p-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; align-items: flex-start; }
-      .p-label { display: block; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; }
-      .req { color: #ef4444; margin-left: 2px; }
+      /* ALIGNMENT FIX: Mirroring Rows */
+      .p-footer-rows { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px; }
+      .p-footer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: flex-end; }
+      .p-col { display: flex; flex-direction: column; }
+      
+      .p-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; min-height: 14px; }
+      .formal-input { padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 15px; outline: none; }
+      .p-pay-btn { padding: 14px 18px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 12px; text-align: left; height: 50px; }
+      .p-pay-btn.active { background: rgba(34,197,94,0.12); color: #22c55e; border-color: #22c55e44; }
 
-      .p-pay-toggle { display: flex; flex-direction: column; gap: 10px; }
-      .p-pay-btn { width: 100%; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 12px; text-align: left; transition: all 0.2s; }
-      .p-pay-btn.active { background: rgba(34,197,94,0.12); color: #22c55e; border-color: #22c55e44; box-shadow: inset 4px 0 0 #22c55e; }
-
-      .formal-input { width: 100%; padding: 16px 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
-      .formal-input:focus { border-color: #22c55e; background: rgba(255,255,255,0.07); }
+      .req { color: #ef4444; }
 
       .p-action-bar { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; background: rgba(255,255,255,0.04); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
-      .total-label { display: block; font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
-      .total-value { font-size: 36px; font-weight: 900; color: #fff; line-height: 1; }
+      .total-label { font-size: 11px; font-weight: 800; color: #64748b; }
+      .total-value { font-size: 32px; font-weight: 900; color: #fff; }
       .total-value span { color: #22c55e; }
       
-      .p-save-btn { padding: 18px 40px; background: #22c55e; color: #fff; border: none; border-radius: 16px; font-weight: 800; font-size: 17px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 12px 30px rgba(34,197,94,0.4); display: flex; align-items: center; gap: 10px; }
-      .p-save-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 45px rgba(34,197,94,0.5); }
-      .btn-icon { font-size: 20px; }
+      .p-save-btn { padding: 16px 36px; background: #22c55e; color: #fff; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(34,197,94,0.3); display: flex; align-items: center; gap: 10px; }
+      .p-save-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(34,197,94,0.4); }
 
       @media (max-width: 680px) {
-        .p-footer-grid { grid-template-columns: 1fr; gap: 32px; }
-        .p-action-bar { flex-direction: column; gap: 24px; text-align: center; padding: 32px 20px; }
-        .total-value { font-size: 44px; }
+        .p-footer-row { grid-template-columns: 1fr; gap: 20px; }
+        .p-action-bar { flex-direction: column; gap: 24px; text-align: center; }
       }
     </style>
   `;
@@ -230,7 +242,7 @@ export async function renderAddSale() {
 
   function renderCart() {
     if (cartItems.length === 0) {
-      cartDiv.innerHTML = `<div class="p-empty">Cart is currently empty. Start adding items above.</div>`;
+      cartDiv.innerHTML = `<div class="p-empty">No items in cart.</div>`;
     } else {
       cartDiv.innerHTML = cartItems.map((i, idx) => `
         <div class="p-item">
