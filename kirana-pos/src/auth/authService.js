@@ -279,13 +279,15 @@ export async function logout() {
   } catch (e) {
     console.warn("[Auth] Could not clear backend token on logout:", e.message);
   }
+  await clearSession();
+  
   // Remember this shop ID so customers logging in on the same device don't need a special URL
   const dbName = localStorage.getItem("kirana_db_name");
   if (dbName && dbName.startsWith("kirana_pos_")) {
     localStorage.setItem("last_shop_db", dbName);
   }
+  
   localStorage.removeItem("kirana_db_name");
-  await clearSession();
   sessionStorage.removeItem("customer_session");
   sessionStorage.removeItem("session");
   location.hash = "";
