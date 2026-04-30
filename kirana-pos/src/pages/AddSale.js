@@ -66,11 +66,12 @@ export async function renderAddSale() {
       .transaction-container {
         width: 100%;
         max-width: 440px;
-        background: rgba(15,23,42,0.6);
+        background: rgba(15,23,42,0.4);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 20px;
         padding: 32px;
         backdrop-filter: blur(20px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
       }
       .transaction-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 24px; }
       

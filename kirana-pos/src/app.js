@@ -82,10 +82,15 @@ const PAGE_ACCESS = {
    MAIN NAVIGATION
 ========================================================= */
 
-export async function navigate(rawPage, skipHashUpdate = false) {
+let isNavigating = false;
 
-  let page = rawPage.split("?")[0] || "dashboard";
-  const app = document.getElementById("app");
+export async function navigate(rawPage, skipHashUpdate = false) {
+  if (isNavigating) return;
+  isNavigating = true;
+
+  try {
+    let page = rawPage.split("?")[0] || "dashboard";
+    const app = document.getElementById("app");
 
   if (!skipHashUpdate) {
     if (location.hash.replace("#", "") !== page) {
@@ -268,6 +273,9 @@ export async function navigate(rawPage, skipHashUpdate = false) {
 
 
   markActivePage(page);
+  } finally {
+    isNavigating = false;
+  }
 }
 
 
