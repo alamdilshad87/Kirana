@@ -35,6 +35,36 @@ export async function renderLayout(contentHtml) {
 
   const initials = name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase() || "U";
 
+  const links = `
+    <a href="#" data-page="dashboard">${navIcons.dashboard}${t("sidebar.dashboard")}</a>
+    <a href="#" data-page="add-sale">${navIcons.sale}${t("sidebar.addSale")}</a>
+
+    ${!isCashier ? `
+    <div class="sidebar-divider"></div>
+    <a href="#" data-page="stock">${navIcons.stock}${t("sidebar.stock")}</a>
+    <a href="#" data-page="bill-scanner">${navIcons.scanner}AI Bill Scanner</a>
+    ` : ""}
+
+    ${!isCashier ? `
+    <div class="sidebar-divider"></div>
+    <a href="#" data-page="reports">${navIcons.reports}${t("sidebar.reports")}</a>
+    <a href="#" data-page="credit">${navIcons.credit}${t("sidebar.creditScore")}</a>
+    <a href="#" data-page="ledger">${navIcons.ledger}${t("sidebar.creditLedger")}</a>
+    <a href="#" data-page="credit-loan">${navIcons.loan}${t("sidebar.creditLoan")}</a>
+    ` : ""}
+
+    ${isOwner ? `
+    <div class="sidebar-divider"></div>
+    <a href="#" data-page="manage-staff">${navIcons.staff}${t("sidebar.manageStaff")}</a>
+    <a href="#" data-page="coupon-manager">${navIcons.coupons}${t("sidebar.coupons")}</a>
+    <a href="#" data-page="audit-log">${navIcons.audit}${t("sidebar.auditLog")}</a>
+    <a href="#" data-page="shop-settings">${navIcons.settings}${t("sidebar.shopSettings")}</a>
+    ` : ""}
+
+    <div class="sidebar-divider"></div>
+    <a href="#" data-page="logout" class="logout-link">${navIcons.logout}${t("sidebar.logout")}</a>
+  `;
+
   return `
     <div class="app-layout">
       <div class="mobile-header">
@@ -44,7 +74,15 @@ export async function renderLayout(contentHtml) {
       </div>
 
       <div id="mobile-drawer" class="mobile-drawer">
-        <div class="drawer-panel"><div id="drawer-links"></div></div>
+        <div class="drawer-panel">
+          <div class="sidebar-brand" style="padding: 20px 0;">
+            <div class="sidebar-brand-icon">K</div>
+            <div class="sidebar-brand-text">
+              <span class="sidebar-brand-name">Kirana POS</span>
+            </div>
+          </div>
+          <div id="drawer-links">${links}</div>
+        </div>
       </div>
 
       <aside class="sidebar">
@@ -62,38 +100,7 @@ export async function renderLayout(contentHtml) {
             <button data-lang="hi">हिं</button>
             <button data-lang="hing">HING</button>
           </div>
-
-          <div class="nav-section-label">MAIN</div>
-          <a href="#" data-page="dashboard">${navIcons.dashboard}${t("sidebar.dashboard")}</a>
-          <a href="#" data-page="add-sale">${navIcons.sale}${t("sidebar.addSale")}</a>
-
-          ${!isCashier ? `
-          <div class="sidebar-divider"></div>
-          <div class="nav-section-label">INVENTORY</div>
-          <a href="#" data-page="stock">${navIcons.stock}${t("sidebar.stock")}</a>
-          <a href="#" data-page="bill-scanner">${navIcons.scanner}AI Bill Scanner</a>
-          ` : ""}
-
-          ${!isCashier ? `
-          <div class="sidebar-divider"></div>
-          <div class="nav-section-label">FINANCE</div>
-          <a href="#" data-page="reports">${navIcons.reports}${t("sidebar.reports")}</a>
-          <a href="#" data-page="credit">${navIcons.credit}${t("sidebar.creditScore")}</a>
-          <a href="#" data-page="ledger">${navIcons.ledger}${t("sidebar.creditLedger")}</a>
-          <a href="#" data-page="credit-loan">${navIcons.loan}${t("sidebar.creditLoan")}</a>
-          ` : ""}
-
-          ${isOwner ? `
-          <div class="sidebar-divider"></div>
-          <div class="nav-section-label">ADMIN</div>
-          <a href="#" data-page="manage-staff">${navIcons.staff}${t("sidebar.manageStaff")}</a>
-          <a href="#" data-page="coupon-manager">${navIcons.coupons}${t("sidebar.coupons")}</a>
-          <a href="#" data-page="audit-log">${navIcons.audit}${t("sidebar.auditLog")}</a>
-          <a href="#" data-page="shop-settings">${navIcons.settings}${t("sidebar.shopSettings")}</a>
-          ` : ""}
-
-          <div class="sidebar-divider"></div>
-          <a href="#" data-page="logout" class="logout-link">${navIcons.logout}${t("sidebar.logout")}</a>
+          ${links}
         </nav>
 
         <div class="sidebar-user-footer">
@@ -126,7 +133,7 @@ export async function renderLayout(contentHtml) {
         margin-right: 12px;
         flex-shrink: 0;
       }
-      .sidebar a {
+      .sidebar a, .drawer-panel a {
         display: flex;
         align-items: center;
         padding: 10px 16px;
@@ -136,12 +143,13 @@ export async function renderLayout(contentHtml) {
         border-radius: 8px;
         margin: 2px 0;
         transition: all 0.2s;
+        text-decoration: none;
       }
-      .sidebar a:hover {
+      .sidebar a:hover, .drawer-panel a:hover {
         background: rgba(255,255,255,0.05);
         color: #fff;
       }
-      .sidebar a.active {
+      .sidebar a.active, .drawer-panel a.active {
         background: rgba(34,197,94,0.1);
         color: #22c55e;
       }

@@ -7,6 +7,7 @@ import "./styles/theme.css";
 import "./styles/pages/openingStock.css";
 import "./styles/features/auditlog.css";
 import { initSyncListener, syncPending } from "./services/syncService";
+import "./styles/responsive.css";
 
 // ✅ Register online listener + 60s poll + startup sync
 initSyncListener();
