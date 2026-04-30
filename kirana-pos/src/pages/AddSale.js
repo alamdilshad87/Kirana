@@ -87,9 +87,21 @@ export async function renderAddSale() {
       .res-item { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; justify-content: space-between; }
       .res-item:hover { background: rgba(255,255,255,0.05); }
 
-      .cart-box { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-      .cart-items { margin: 10px 0; max-height: 120px; overflow-y: auto; }
-      .cart-total { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; font-weight: 800; color: #fff; display: flex; justify-content: space-between; }
+      .cart-box { background: rgba(0,0,0,0.25); padding: 18px; border-radius: 14px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.05); }
+      .cart-items { margin: 12px 0; max-height: 200px; overflow-y: auto; }
+      
+      .cart-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+      .cart-item-info { flex: 1; }
+      .cart-item-name { color: #fff; font-size: 14px; font-weight: 600; display: block; }
+      .cart-item-price { color: #64748b; font-size: 12px; }
+
+      .cart-qty-ctrl { display: flex; align-items: center; background: rgba(255,255,255,0.06); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
+      .cart-qty-ctrl button { width: 30px; height: 30px; border: none; background: transparent; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+      .cart-qty-ctrl button:hover { background: rgba(255,255,255,0.08); }
+      .cart-qty-ctrl span { min-width: 32px; text-align: center; font-size: 13px; font-weight: 700; color: #22c55e; border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); height: 30px; display: flex; align-items: center; justify-content: center; }
+
+      .cart-total { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; font-weight: 800; color: #fff; display: flex; justify-content: space-between; font-size: 16px; }
+      .cart-total span:last-child { color: #22c55e; }
 
       .section-label { font-size: 11px; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
       .payment-btns { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -150,7 +162,12 @@ export async function renderAddSale() {
     resultsDiv.querySelectorAll(".res-item").forEach(row => {
       row.onclick = () => {
         const s = stock.find(x => x.id === row.dataset.id);
-        cartItems.push(s);
+        const existing = cartItems.find(c => c.id === s.id);
+        if (existing) {
+          existing.qty = (existing.qty || 1) + 1;
+        } else {
+          cartItems.push({ ...s, qty: 1 });
+        }
         renderCart();
         searchInput.value = "";
         resultsDiv.innerHTML = "";
@@ -160,18 +177,43 @@ export async function renderAddSale() {
 
   function renderCart() {
     if (cartItems.length === 0) {
-      cartDiv.innerHTML = `<p style="color:#64748b;font-size:13px">No items added</p>`;
+      cartDiv.innerHTML = `<p style="color:#64748b;font-size:13px;text-align:center;padding:10px">No items added</p>`;
       totalVal.textContent = "0";
     } else {
       let total = 0;
-      cartDiv.innerHTML = cartItems.map(i => {
-        total += i.price;
-        return `<div style="display:flex;justify-content:space-between;color:#fff;font-size:14px;margin-bottom:6px">
-          <span>${i.name}</span>
-          <span>₹${i.price}</span>
-        </div>`;
+      cartDiv.innerHTML = cartItems.map((i, idx) => {
+        total += (i.price * (i.qty || 1));
+        return `
+          <div class="cart-row">
+            <div class="cart-item-info">
+              <span class="cart-item-name">${i.name}</span>
+              <span class="cart-item-price">₹${i.price} / unit</span>
+            </div>
+            <div class="cart-qty-ctrl">
+              <button data-idx="${idx}" data-action="minus">−</button>
+              <span>${i.qty || 1}</span>
+              <button data-idx="${idx}" data-action="plus">+</button>
+            </div>
+          </div>
+        `;
       }).join("");
-      totalVal.textContent = total;
+      
+      totalVal.textContent = total.toFixed(2);
+
+      cartDiv.querySelectorAll("button").forEach(btn => {
+        btn.onclick = () => {
+          const idx = parseInt(btn.dataset.idx);
+          if (!cartItems[idx].qty) cartItems[idx].qty = 1;
+          
+          if (btn.dataset.action === "plus") {
+            cartItems[idx].qty++;
+          } else {
+            cartItems[idx].qty--;
+            if (cartItems[idx].qty <= 0) cartItems.splice(idx, 1);
+          }
+          renderCart();
+        };
+      });
     }
   }
 
