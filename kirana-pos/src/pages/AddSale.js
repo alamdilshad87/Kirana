@@ -1,10 +1,10 @@
 import { renderLayout } from "../components/Layout";
-import { getStock, saveSale, processSale, getShopSettings } from "../services/db";
+import { getAllStock, saveSale, processSale, getShopSettings } from "../services/db";
 import { showToast } from "../utils/toast";
 import { t } from "../i18n/i18n";
 
 export async function renderAddSale() {
-  const stock = await getStock();
+  const stock = await getAllStock();
   const shopSettings = await getShopSettings();
   const shopId = shopSettings?.backendShopId;
 
