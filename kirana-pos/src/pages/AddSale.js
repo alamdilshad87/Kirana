@@ -93,12 +93,13 @@ export async function renderAddSale() {
     <style>
       .add-sale-pro { display: flex; justify-content: center; padding: 40px 20px; }
       .pro-card { 
-        width: 100%; max-width: 680px; /* WIDENED as requested */
+        width: 100%; max-width: 680px; 
         background: rgba(10, 15, 30, 0.6); 
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 24px; padding: 32px;
         box-shadow: 0 50px 100px rgba(0,0,0,0.5);
         backdrop-filter: blur(30px);
+        overflow: visible;
       }
       
       .pro-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
@@ -120,7 +121,7 @@ export async function renderAddSale() {
       .p-drop-item small { color: #64748b; font-size: 12px; }
 
       .p-cart-container { background: rgba(0,0,0,0.15); border-radius: 16px; padding: 4px; margin-bottom: 24px; }
-      .p-cart-list { max-height: 220px; overflow-y: auto; padding: 12px; }
+      .p-cart-list { padding: 12px; overflow: visible; }
       .p-empty { text-align: center; color: #475569; font-size: 13px; padding: 20px; font-style: italic; }
       
       .p-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
