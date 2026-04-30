@@ -221,17 +221,31 @@ export async function renderAddSale() {
     const amount = saleMode === "amount" ? parseFloat(document.getElementById("quick-amount").value) : parseFloat(totalVal.textContent);
     if (!amount || amount <= 0) return showToast("Invalid amount", "error");
 
+    const custName = document.getElementById("cust-name").value.trim();
+    const custPhone = document.getElementById("cust-phone").value.trim();
+
+    if (selectedPayment === "upi") {
+      const { openUPIPayment } = await import("../components/UPIPaymentOverlay");
+      const confirmed = await openUPIPayment(amount);
+      if (!confirmed) return;
+    }
+
     finalizeBtn.disabled = true;
-    finalizeBtn.textContent = "...";
+    finalizeBtn.textContent = "Saving...";
 
     const sale = {
       id: crypto.randomUUID(),
       amount,
       paymentMethod: selectedPayment,
       accountType: saleMode === "amount" ? "QUICK_SALE" : "ITEM_SALE",
-      customerName: document.getElementById("cust-name").value.trim() || "Walk-in",
-      customerPhone: document.getElementById("cust-phone").value.trim(),
-      items: cartItems,
+      customerName: custName || "Walk-in",
+      customerPhone: custPhone,
+      items: cartItems.map(i => ({
+        itemId: i.id, // CRITICAL FIX: Map id to itemId
+        name: i.name,
+        price: i.price,
+        qty: i.qty || 1
+      })),
       date: new Date().toLocaleDateString(),
       timestamp: Date.now()
     };
@@ -239,9 +253,11 @@ export async function renderAddSale() {
     try {
       if (saleMode === "items") await processSale(sale);
       else await saveSale(sale);
-      showToast("Saved!", "success");
+      showToast("Saved Successfully!", "success");
       navigate("dashboard");
-    } catch {
+    } catch (err) {
+      console.error("Save Error:", err);
+      showToast(err || "Save failed", "error");
       finalizeBtn.disabled = false;
       finalizeBtn.textContent = "Save";
     }
