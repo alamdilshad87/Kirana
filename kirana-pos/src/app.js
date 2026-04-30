@@ -136,7 +136,7 @@ export async function navigate(rawPage, skipHashUpdate = false) {
     }
 
     // Default: Welcome screen for all unauthenticated users
-    app.innerHTML = Welcome();
+    await Welcome();
     attachNavEvents();
     return;
   }
