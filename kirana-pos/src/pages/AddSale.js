@@ -29,7 +29,6 @@ export async function renderAddSale() {
         </div>
 
         <div class="pro-card-body">
-          <!-- ITEMS AREA -->
           <div id="p-item-area">
             <div class="p-search-wrap">
               <input id="p-search" type="text" placeholder="Search product name or scan barcode..." autocomplete="off" />
@@ -43,7 +42,6 @@ export async function renderAddSale() {
             </div>
           </div>
 
-          <!-- QUICK AMOUNT AREA -->
           <div id="p-quick-area" style="display:none">
             <div class="quick-input-wrap">
               <span class="currency-symbol">₹</span>
@@ -53,7 +51,6 @@ export async function renderAddSale() {
 
           <div class="p-divider"></div>
 
-          <!-- FOOTER GRID (PAYMENT & CUSTOMER) -->
           <div class="p-footer-grid">
             <div class="p-column">
               <label class="p-label">PAYMENT METHOD</label>
@@ -69,17 +66,16 @@ export async function renderAddSale() {
                 <label class="p-label">CUSTOMER NAME <span class="req">*</span></label>
                 <input id="p-cust-name" type="text" placeholder="Full Name" class="formal-input" />
               </div>
-              <div class="p-field" style="margin-top:20px">
+              <div class="p-field" style="margin-top:16px">
                 <label class="p-label">MOBILE NUMBER <span class="req">*</span></label>
                 <input id="p-cust-phone" type="tel" placeholder="10-digit number" maxlength="10" class="formal-input" />
               </div>
             </div>
           </div>
 
-          <!-- TOTAL & ACTION -->
           <div class="p-action-bar">
             <div class="total-display">
-              <span class="total-label">Total Amount</span>
+              <span class="total-label">TOTAL AMOUNT</span>
               <span class="total-value">₹<span id="p-total">0</span></span>
             </div>
             <button id="p-save" class="p-save-btn">
@@ -93,78 +89,77 @@ export async function renderAddSale() {
     <style>
       .add-sale-pro { display: flex; justify-content: center; padding: 40px 20px; }
       .pro-card { 
-        width: 100%; max-width: 680px; 
-        background: rgba(10, 15, 30, 0.6); 
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 24px; padding: 32px;
-        box-shadow: 0 50px 100px rgba(0,0,0,0.5);
-        backdrop-filter: blur(30px);
+        width: 100%; max-width: 720px; 
+        background: rgba(10, 15, 30, 0.65); 
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 28px; padding: 40px;
+        box-shadow: 0 50px 100px rgba(0,0,0,0.6);
+        backdrop-filter: blur(40px);
         overflow: visible;
       }
       
       .pro-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-      .title-group h2 { font-size: 20px; color: #fff; font-weight: 800; margin: 0; }
-      .subtitle-small { font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500; }
+      .title-group h2 { font-size: 22px; color: #fff; font-weight: 800; margin: 0; }
+      .subtitle-small { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
       
-      .pro-tabs { display: flex; background: rgba(255,255,255,0.04); padding: 4px; border-radius: 12px; }
-      .p-tab { padding: 8px 16px; border: none; background: transparent; color: #94a3b8; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 9px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+      .pro-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; }
+      .p-tab { padding: 8px 20px; border: none; background: transparent; color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 9px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
       .p-tab.active { background: #22c55e; color: #fff; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
 
       .p-search-wrap { position: relative; margin-bottom: 24px; }
-      .p-search-wrap input { width: 100%; padding: 16px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; outline: none; font-size: 15px; }
-      .p-search-wrap input:focus { border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
+      .p-search-wrap input { width: 100%; padding: 18px 24px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; outline: none; font-size: 16px; transition: 0.2s; }
+      .p-search-wrap input:focus { border-color: #22c55e; background: rgba(255,255,255,0.07); box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
 
-      .p-dropdown { position: absolute; top: 60px; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-      .p-drop-item { display: flex; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+      .p-dropdown { position: absolute; top: 68px; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; z-index: 100; max-height: 240px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+      .p-drop-item { display: flex; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
       .p-drop-item:hover { background: rgba(255,255,255,0.05); }
-      .p-drop-item strong { color: #fff; font-size: 14px; }
-      .p-drop-item small { color: #64748b; font-size: 12px; }
+      .p-drop-item strong { color: #fff; font-size: 15px; }
+      .p-drop-item small { color: #64748b; font-size: 13px; }
 
-      .p-cart-container { background: rgba(0,0,0,0.15); border-radius: 16px; padding: 4px; margin-bottom: 24px; }
-      .p-cart-list { padding: 12px; overflow: visible; }
-      .p-empty { text-align: center; color: #475569; font-size: 13px; padding: 20px; font-style: italic; }
+      .p-cart-container { background: rgba(0,0,0,0.2); border-radius: 18px; padding: 6px; margin-bottom: 32px; }
+      .p-cart-list { padding: 12px; overflow: visible; min-height: 40px; }
+      .p-empty { text-align: center; color: #475569; font-size: 14px; padding: 30px; font-style: italic; }
       
-      .p-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
+      .p-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: rgba(255,255,255,0.03); border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
       .p-item-info { flex: 1; }
-      .p-item-info div { color: #f8fafc; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-      .p-item-info small { color: #64748b; font-size: 12px; font-weight: 500; }
+      .p-item-info div { color: #f8fafc; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+      .p-item-info small { color: #64748b; font-size: 13px; font-weight: 500; }
       
-      /* QUANTITY BOX ALIGNMENT FIX */
-      .p-qty { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
-      .p-qty button { width: 32px; height: 32px; border: none; background: transparent; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-      .p-qty button:hover { background: rgba(255,255,255,0.05); }
-      .p-qty span { min-width: 36px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); color: #fff; font-size: 13px; font-weight: 700; border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); }
+      .p-qty { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+      .p-qty button { width: 36px; height: 36px; border: none; background: transparent; color: #fff; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+      .p-qty button:hover { background: rgba(255,255,255,0.06); }
+      .p-qty span { min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; font-weight: 700; border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
 
-      .quick-input-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
-      .currency-symbol { position: absolute; left: 24px; font-size: 28px; font-weight: 800; color: #22c55e; opacity: 0.5; }
-      .p-large-input { width: 100%; padding: 24px 24px 24px 60px; font-size: 40px; font-weight: 800; background: rgba(34,197,94,0.03); border: 2px dashed rgba(34,197,94,0.2); border-radius: 20px; color: #22c55e; outline: none; text-align: left; }
+      .quick-input-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 32px; }
+      .currency-symbol { position: absolute; left: 30px; font-size: 32px; font-weight: 800; color: #22c55e; opacity: 0.6; }
+      .p-large-input { width: 100%; padding: 30px 30px 30px 70px; font-size: 48px; font-weight: 900; background: rgba(34,197,94,0.03); border: 2px dashed rgba(34,197,94,0.25); border-radius: 24px; color: #22c55e; outline: none; text-align: left; }
       
-      .p-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin-bottom: 32px; }
+      .p-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin-bottom: 32px; }
 
-      .p-footer-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; margin-bottom: 32px; }
-      .p-label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-      .req { color: #ef4444; }
+      .p-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; align-items: flex-start; }
+      .p-label { display: block; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; }
+      .req { color: #ef4444; margin-left: 2px; }
 
-      .p-pay-toggle { display: flex; flex-direction: column; gap: 8px; }
-      .p-pay-btn { width: 100%; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; text-align: left; transition: all 0.2s; }
-      .p-pay-btn.active { background: rgba(34,197,94,0.1); color: #22c55e; border-color: #22c55e44; box-shadow: inset 4px 0 0 #22c55e; }
+      .p-pay-toggle { display: flex; flex-direction: column; gap: 10px; }
+      .p-pay-btn { width: 100%; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 12px; text-align: left; transition: all 0.2s; }
+      .p-pay-btn.active { background: rgba(34,197,94,0.12); color: #22c55e; border-color: #22c55e44; box-shadow: inset 4px 0 0 #22c55e; }
 
-      .formal-input { width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: 0.2s; }
-      .formal-input:focus { border-color: #22c55e; background: rgba(255,255,255,0.06); }
+      .formal-input { width: 100%; padding: 16px 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
+      .formal-input:focus { border-color: #22c55e; background: rgba(255,255,255,0.07); }
 
-      .p-action-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
-      .total-label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
-      .total-value { font-size: 28px; font-weight: 900; color: #fff; }
+      .p-action-bar { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; background: rgba(255,255,255,0.04); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+      .total-label { display: block; font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
+      .total-value { font-size: 36px; font-weight: 900; color: #fff; line-height: 1; }
       .total-value span { color: #22c55e; }
       
-      .p-save-btn { padding: 16px 32px; background: #22c55e; color: #fff; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px rgba(34,197,94,0.3); display: flex; align-items: center; gap: 8px; }
-      .p-save-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(34,197,94,0.4); }
-      .btn-icon { font-size: 18px; }
+      .p-save-btn { padding: 18px 40px; background: #22c55e; color: #fff; border: none; border-radius: 16px; font-weight: 800; font-size: 17px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 12px 30px rgba(34,197,94,0.4); display: flex; align-items: center; gap: 10px; }
+      .p-save-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 45px rgba(34,197,94,0.5); }
+      .btn-icon { font-size: 20px; }
 
-      @media (max-width: 640px) {
-        .p-footer-grid { grid-template-columns: 1fr; gap: 24px; }
-        .pro-card-header { flex-direction: column; gap: 16px; }
-        .p-action-bar { flex-direction: column; gap: 20px; text-align: center; }
+      @media (max-width: 680px) {
+        .p-footer-grid { grid-template-columns: 1fr; gap: 32px; }
+        .p-action-bar { flex-direction: column; gap: 24px; text-align: center; padding: 32px 20px; }
+        .total-value { font-size: 44px; }
       }
     </style>
   `;
