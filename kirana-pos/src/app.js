@@ -23,6 +23,7 @@ import { renderCustomerRegister } from "./pages/CustomerRegister";
 import { renderCustomerPortal } from "./pages/CustomerPortal";
 import { renderCustomerShopCoupons } from "./pages/CustomerShopCoupons";
 import { renderCouponManager } from "./pages/CouponManager";
+import { renderCustomerForgotPassword } from "./pages/CustomerForgotPassword";
 
 import {
   isCustomerLoggedIn,
@@ -62,6 +63,7 @@ const PAGE_MAP = {
   "customer-portal": renderCustomerPortal,
   "customer-shop": renderCustomerShopCoupons,
   "coupon-manager": renderCouponManager,
+  "customer-forgot-password": renderCustomerForgotPassword
 };
 
 
@@ -123,6 +125,12 @@ export async function navigate(rawPage, skipHashUpdate = false) {
 
     if (page === "customer-register") {
       await renderCustomerRegister(app);
+      attachNavEvents();
+      return;
+    }
+
+    if (page === "customer-forgot-password") {
+      await renderCustomerForgotPassword(app);
       attachNavEvents();
       return;
     }

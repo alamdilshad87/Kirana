@@ -57,6 +57,7 @@ export async function createCustomerAccount({ name, phone, password }) {
         phone,
         password,
         lifetimeSpend: 0,
+        loyaltyPoints: 0,
         loyaltyLevel: "bronze",
         visitCount: 0,
         createdAt: Date.now(),
@@ -209,4 +210,33 @@ export async function getCurrentCustomer() {
   });
 
   return customer;
+}
+
+/* RESET PASSWORD */
+export async function resetCustomerPassword(phone, newPassword) {
+  const db = await openDB();
+  
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("customers", "readwrite");
+    const store = tx.objectStore("customers");
+    const index = store.index("phone");
+    
+    const req = index.get(phone);
+    
+    req.onsuccess = () => {
+      const customer = req.result;
+      if (!customer) {
+        resolve(false);
+        return;
+      }
+      
+      customer.password = newPassword;
+      customer.updatedAt = Date.now();
+      store.put(customer);
+      resolve(true);
+    };
+    
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  });
 }

@@ -46,6 +46,7 @@ export async function resolveCustomerIdentity({ name, phone }) {
           phone: phone,
           aliases: name ? [name.toLowerCase()] : [],
           lifetimeSpend: 0,
+          loyaltyPoints: 0,
           createdAt: Date.now(),
           updatedAt: Date.now()
         };
@@ -65,6 +66,7 @@ export async function resolveCustomerIdentity({ name, phone }) {
         phone: null,
         aliases: name ? [name.toLowerCase()] : [],
         lifetimeSpend: 0,
+        loyaltyPoints: 0,
         createdAt: Date.now(),
         updatedAt: Date.now()
       };

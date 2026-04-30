@@ -135,6 +135,13 @@ export async function renderCustomerPortal(container){
         </div>
       </div>
 
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="stat-label">Loyalty Points</div>
+          <div class="stat-value">🪙 ${fullCustomer?.loyaltyPoints || 0}</div>
+        </div>
+      </div>
+
     </div>
 
     <div class="card" style="margin-top:24px;">

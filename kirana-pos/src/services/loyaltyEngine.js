@@ -32,6 +32,11 @@ export async function updateCustomerLoyalty(customerId, amount) {
       customer.lifetimeSpend = (customer.lifetimeSpend || 0) + amount;
       customer.visitCount = (customer.visitCount || 0) + 1;
       customer.loyaltyLevel = calculateLoyaltyLevel(customer.lifetimeSpend);
+      
+      // Points: 1 point per 100 spent
+      const newPoints = Math.floor(amount / 100);
+      customer.loyaltyPoints = (customer.loyaltyPoints || 0) + newPoints;
+      
       customer.updatedAt = Date.now();
 
       store.put(customer);
@@ -54,10 +59,14 @@ export async function getCustomerLoyalty(customerId) {
     const req = store.get(customerId);
 
     req.onsuccess = () => {
-      resolve(req.result?.loyaltyLevel || "bronze");
+      const customer = req.result;
+      resolve({
+        level: customer?.loyaltyLevel || "bronze",
+        points: customer?.loyaltyPoints || 0
+      });
     };
 
-    req.onerror = () => resolve("bronze");
+    req.onerror = () => resolve({ level: "bronze", points: 0 });
   });
 }
 

@@ -1,6 +1,12 @@
 import { loginCustomer, getCustomerByPhone } from "../services/customerAuthService";
 
 export async function renderCustomerLogin(container) {
+  const urlParams = new URLSearchParams(window.location.search || window.location.hash.split("?")[1] || "");
+  const shopId = urlParams.get("shopId");
+  
+  if (shopId) {
+    localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
+  }
 
   container.innerHTML = `
     <div class="auth-container">
@@ -27,6 +33,10 @@ export async function renderCustomerLogin(container) {
           style="width:100%;margin-top:10px;">
           New Customer? Register
         </button>
+
+        <p style="text-align:center;margin-top:15px;">
+          <a href="#customer-forgot-password" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Forgot Password?</a>
+        </p>
 
         <div id="cust-error"
           style="color:#ef4444;margin-top:10px;"></div>
