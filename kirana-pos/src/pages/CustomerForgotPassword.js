@@ -3,27 +3,94 @@ import { showToast } from "../utils/toast";
 
 export async function renderCustomerForgotPassword(container) {
   container.innerHTML = `
-    <div class="auth-container">
-      <div class="glass-card" style="max-width:400px;margin:auto;margin-top:120px;">
-        <h2>Reset Password</h2>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">
-          Enter your registered phone number to set a new password.
-        </p>
+    <div class="auth-page">
+      <div class="auth-bg">
+        <div class="blob-subtle"></div>
+      </div>
 
-        <input id="reset-phone" placeholder="Phone Number" />
-        <input id="reset-new-password" type="password" placeholder="New Password" />
-        
-        <button id="btn-reset" class="btn-primary" style="width:100%;margin-top:12px;">
-          Update Password
-        </button>
+      <div class="glass-card-formal auth-card">
+        <div class="auth-header">
+          <h1>Security Reset</h1>
+          <p>Please enter your registered phone number to set a new password</p>
+        </div>
 
-        <p style="text-align:center;margin-top:15px;">
-          <a href="#customer-login" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Back to Login</a>
-        </p>
+        <div class="auth-body">
+          <div class="input-group-formal">
+            <label>Registered Phone</label>
+            <input id="reset-phone" type="tel" placeholder="9999999999" />
+          </div>
 
-        <div id="reset-error" style="color:#ef4444;margin-top:10px;"></div>
+          <div class="input-group-formal">
+            <label>New Secure Password</label>
+            <input id="reset-new-password" type="password" placeholder="••••••••" />
+          </div>
+
+          <button id="btn-reset" class="btn-formal-primary">
+            Update Credentials
+          </button>
+
+          <div class="auth-footer-formal">
+            <a href="#customer-login">Return to Sign In</a>
+          </div>
+
+          <div id="reset-error" class="error-text"></div>
+        </div>
       </div>
     </div>
+
+    <style>
+      .auth-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: #0a0c10;
+        position: relative;
+        font-family: 'Inter', -apple-system, sans-serif;
+      }
+      .auth-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      .blob-subtle { 
+        position: absolute; width: 600px; height: 600px; 
+        background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%); 
+        top: -200px; left: -200px; 
+      }
+
+      .glass-card-formal {
+        width: 100%;
+        max-width: 380px;
+        padding: 48px 40px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      }
+      .auth-header { text-align: center; margin-bottom: 36px; }
+      .auth-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; color: #fff; margin-bottom: 8px; }
+      .auth-header p { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+      .input-group-formal { margin-bottom: 24px; }
+      .input-group-formal label { display: block; font-size: 12px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+      .input-group-formal input {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+      }
+      .input-group-formal input:focus { border-color: #22c55e; background: rgba(0,0,0,0.4); outline: none; }
+
+      .btn-formal-primary {
+        width: 100%; padding: 14px; background: #22c55e; color: #fff; border: none; border-radius: 8px;
+        font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+      }
+      .auth-footer-formal { margin-top: 32px; text-align: center; }
+      .auth-footer-formal a { color: #22c55e; text-decoration: none; font-size: 13px; font-weight: 500; }
+      .error-text { color: #f87171; font-size: 12px; text-align: center; margin-top: 16px; min-height: 18px; }
+    </style>
   `;
 
   document.getElementById("btn-reset").onclick = async () => {
@@ -49,7 +116,7 @@ export async function renderCustomerForgotPassword(container) {
       showToast("Password updated successfully!", "success");
       location.hash = "customer-login";
     } else {
-      error.textContent = "Customer not found with this phone number";
+      error.textContent = "Account not found";
     }
   };
 }

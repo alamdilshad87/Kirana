@@ -17,49 +17,41 @@ export async function renderCustomerLogin(container) {
   container.innerHTML = `
     <div class="auth-page">
       <div class="auth-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+        <div class="blob-subtle"></div>
       </div>
 
-      <div class="glass-card auth-card">
+      <div class="glass-card-formal auth-card">
         <div class="auth-header">
-          <div class="auth-icon">👥</div>
-          <h1>Customer Portal</h1>
-          <p>Login to view your points and coupons</p>
+          <h1>Customer Access</h1>
+          <p>Secure login to your personal loyalty portal</p>
         </div>
 
         <div class="auth-body">
-          <div class="input-group">
+          <div class="input-group-formal">
             <label>Phone Number</label>
-            <div class="input-wrapper">
-              <span class="input-adornment">📱</span>
-              <input id="cust-phone" type="tel" placeholder="Enter your mobile number" />
-            </div>
+            <input id="cust-phone" type="tel" placeholder="9999999999" />
           </div>
 
-          <div class="input-group">
+          <div class="input-group-formal">
             <label>Password</label>
-            <div class="input-wrapper">
-              <span class="input-adornment">🔒</span>
-              <input id="cust-password" type="password" placeholder="••••••••" />
-            </div>
+            <input id="cust-password" type="password" placeholder="••••••••" />
           </div>
 
-          <button id="cust-login" class="btn-primary full-width">
+          <button id="cust-login" class="btn-formal-primary">
             Sign In
           </button>
 
-          <button id="cust-register" class="btn-secondary full-width" style="margin-top:12px;">
-            Create New Account
+          <button id="cust-register" class="btn-formal-secondary">
+            Create Account
           </button>
 
-          <div class="auth-footer">
-            <a href="#customer-forgot-password">Forgot Password?</a>
-            <div class="divider"></div>
-            <a href="#login" style="color:var(--text-secondary);font-weight:400;">Login as Shopkeeper</a>
+          <div class="auth-footer-formal">
+            <a href="#customer-forgot-password">Trouble signing in?</a>
+            <div class="auth-divider"></div>
+            <a href="#login" class="switch-link">Access Shop Management</a>
           </div>
 
-          <div id="cust-error" class="error-msg"></div>
+          <div id="cust-error" class="error-text"></div>
         </div>
       </div>
     </div>
@@ -71,52 +63,62 @@ export async function renderCustomerLogin(container) {
         align-items: center;
         justify-content: center;
         padding: 20px;
-        background: #080F1E;
+        background: #0a0c10;
         position: relative;
-        overflow: hidden;
+        font-family: 'Inter', -apple-system, sans-serif;
       }
-      .auth-bg { position: absolute; inset: 0; pointer-events: none; }
-      .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12; }
-      .blob-1 { width: 400px; height: 400px; background: #22c55e; top: -100px; left: -100px; }
-      .blob-2 { width: 300px; height: 300px; background: #6366f1; bottom: -50px; right: -50px; }
-
-      .auth-card {
-        width: 100%;
-        max-width: 400px;
-        padding: 40px;
-        border-radius: 24px;
-        z-index: 2;
+      .auth-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      .blob-subtle { 
+        position: absolute; width: 600px; height: 600px; 
+        background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%); 
+        top: -200px; left: -200px; 
       }
-      .auth-header { text-align: center; margin-bottom: 32px; }
-      .auth-icon { font-size: 48px; margin-bottom: 16px; }
-      .auth-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #fff; }
-      .auth-header p { font-size: 14px; color: #64748b; }
 
-      .input-group { margin-bottom: 20px; }
-      .input-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; }
-      .input-wrapper { position: relative; }
-      .input-adornment { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.6; }
-      .input-wrapper input {
+      .glass-card-formal {
         width: 100%;
-        padding: 12px 12px 12px 42px;
-        background: rgba(255,255,255,0.05);
+        max-width: 380px;
+        padding: 48px 40px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      }
+      .auth-header { text-align: center; margin-bottom: 36px; }
+      .auth-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; color: #fff; margin-bottom: 8px; }
+      .auth-header p { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+      .input-group-formal { margin-bottom: 24px; }
+      .input-group-formal label { display: block; font-size: 12px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+      .input-group-formal input {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0,0,0,0.2);
         border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
+        border-radius: 8px;
         color: #fff;
-        font-size: 15px;
-        transition: border-color 0.2s;
+        font-size: 14px;
+        transition: all 0.2s ease;
       }
-      .input-wrapper input:focus { border-color: #22c55e; outline: none; }
+      .input-group-formal input:focus { border-color: #22c55e; background: rgba(0,0,0,0.4); outline: none; }
 
-      .full-width { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 12px; cursor: pointer; }
-      .btn-primary { background: #22c55e; color: #fff; border: none; }
-      .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+      .btn-formal-primary {
+        width: 100%; padding: 14px; background: #22c55e; color: #fff; border: none; border-radius: 8px;
+        font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+      }
+      .btn-formal-primary:hover { opacity: 0.9; }
+      .btn-formal-secondary {
+        width: 100%; padding: 12px; background: transparent; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); 
+        border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 12px; transition: background 0.2s;
+      }
+      .btn-formal-secondary:hover { background: rgba(255,255,255,0.03); }
 
-      .auth-footer { margin-top: 24px; text-align: center; }
-      .auth-footer a { color: #22c55e; text-decoration: none; font-size: 14px; font-weight: 600; display: block; margin-bottom: 12px; }
-      .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 16px 0; }
+      .auth-footer-formal { margin-top: 32px; text-align: center; }
+      .auth-footer-formal a { color: #22c55e; text-decoration: none; font-size: 13px; font-weight: 500; }
+      .auth-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px auto; width: 60%; }
+      .switch-link { color: #64748b !important; font-size: 12px !important; }
 
-      .error-msg { color: #ef4444; font-size: 13px; text-align: center; margin-top: 16px; min-height: 20px; }
+      .error-text { color: #f87171; font-size: 12px; text-align: center; margin-top: 16px; min-height: 18px; }
     </style>
   `;
 
