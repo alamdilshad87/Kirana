@@ -97,18 +97,65 @@ export async function createOwnerAccount({
   email,
   shopName
 }) {
-  const existing = await getUserByUsername(username);
-
-  if (existing) {
-    throw new Error("An account with this phone number already exists");
-  }
-
   if (!password || password.length < 6) {
     throw new Error("Password must be at least 6 characters");
   }
 
-  const hashed = await hashPassword(password);
+  // 1. Try to register on backend FIRST to get the real Shop ID
+  let shopId = null;
+  let backendToken = null;
 
+  if (navigator.onLine && API_BASE) {
+    try {
+      const ownerPhone = phone || username;
+      const regRes = await fetch(`${API_BASE}/api/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopname: shopName || `${name}'s Shop`,
+          ownername: name,
+          ownerphone: ownerPhone,
+          owneremail: email || null,
+          password
+        }),
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (regRes.ok || regRes.status === 409) {
+        const loginRes = await fetch(`${API_BASE}/api/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ownerphone: ownerPhone, password }),
+          signal: AbortSignal.timeout(5000)
+        });
+        if (loginRes.ok) {
+          const data = await loginRes.json();
+          shopId = data.shop?.id;
+          backendToken = data.token;
+        }
+      }
+    } catch (e) {
+      console.warn("Backend registration skipped (offline):", e.message);
+    }
+  }
+
+  // 2. Set the DB namespace BEFORE saving anything!
+  if (shopId) {
+    localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
+  } else {
+    // If offline, generate a random offline namespace so they don't share
+    const offlineId = crypto.randomUUID().split('-')[0];
+    localStorage.setItem("kirana_db_name", `kirana_pos_offline_${offlineId}`);
+  }
+
+  // 3. Now we can safely check if user exists in this isolated DB
+  const existing = await getUserByUsername(username);
+  if (existing) {
+    throw new Error("An account with this phone number already exists");
+  }
+
+  // 4. Save the user locally into the isolated DB
+  const hashed = await hashPassword(password);
   const user = {
     id: crypto.randomUUID(),
     name,
@@ -121,92 +168,64 @@ export async function createOwnerAccount({
 
   await saveUser(user);
 
-  const existingSettings = await getShopSettings();
+  // 5. Save settings into the isolated DB
   await saveShopSettings({
-    ...(existingSettings || {}),
     ownerPhone: phone || username,
     ownerName: name,
     shopName: shopName || `${name}'s Shop`,
-    ownerEmail: email || null
-  });
-
-  await tryBackendRegisterAndLogin({
-    name,
-    username,
-    password,
-    phone,
-    email,
-    shopName
+    ownerEmail: email || null,
+    backendToken: backendToken || null,
+    backendShopId: shopId || null
   });
 }
 
-/* -------------------------------------------------------
-   Register shop on backend (once) and store JWT token.
-   Called during createOwnerAccount - fails silently if offline.
-------------------------------------------------------- */
-async function tryBackendRegisterAndLogin({
-  name,
-  username,
-  password,
-  phone,
-  email,
-  shopName
-}) {
-  try {
-    if (!navigator.onLine || !API_BASE) return;
-
-    const ownerPhone = phone || username;
-
-    const regRes = await fetch(`${API_BASE}/api/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shopname: shopName || `${name}'s Shop`,
-        ownername: name,
-        ownerphone: ownerPhone,
-        owneremail: email || null,
-        password
-      }),
-      signal: AbortSignal.timeout(5000)
-    });
-
-    if (!regRes.ok && regRes.status !== 409) return;
-
-    const loginRes = await fetch(`${API_BASE}/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ownerphone: ownerPhone, password }),
-      signal: AbortSignal.timeout(5000)
-    });
-
-    if (!loginRes.ok) return;
-
-    const data = await loginRes.json();
-
-    if (data.token) {
-      const shopId = data.shop?.id || null;
-      const current = await getShopSettings();
-      await saveShopSettings({
-        ...(current || {}),
-        backendToken: data.token,
-        backendShopId: shopId
-      });
-      console.log("[Auth] Backend token obtained");
-    }
-  } catch (e) {
-    console.warn("[Auth] Backend registration failed (offline?) - local only:", e.message);
-  }
-}
+// tryBackendRegisterAndLogin logic merged into createOwnerAccount
 
 export async function login(username, password) {
-  const user = await getUserByUsername(username);
+  // If user is logging into an existing cloud account on a new device,
+  // we must get the shopId FIRST to switch to their isolated namespace.
+  if (navigator.onLine && API_BASE) {
+    try {
+      const loginRes = await fetch(`${API_BASE}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerphone: username, password }),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (loginRes.ok) {
+        const data = await loginRes.json();
+        if (data.shop?.id) {
+          localStorage.setItem("kirana_db_name", `kirana_pos_${data.shop.id}`);
+        }
+      }
+    } catch (e) {
+      console.warn("Backend login check failed:", e.message);
+    }
+  }
+
+  let user = await getUserByUsername(username);
+
+  // If still not found locally but backend succeeded, we must recreate the local user
+  if (!user && navigator.onLine && API_BASE) {
+    try {
+      const hashed = await hashPassword(password);
+      user = {
+        id: crypto.randomUUID(),
+        name: "Shop Owner",
+        username,
+        password: hashed,
+        role: ROLES.OWNER,
+        createdAt: Date.now()
+      };
+      await saveUser(user);
+    } catch(e) {}
+  }
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("User not found locally or on cloud");
   }
 
   const hashed = await hashPassword(password);
-
   if (hashed !== user.password) {
     throw new Error("Invalid password");
   }
@@ -248,6 +267,8 @@ export async function logout() {
   } catch (e) {
     console.warn("[Auth] Could not clear backend token on logout:", e.message);
   }
+  // Clear the active namespace so the next login starts fresh
+  localStorage.removeItem("kirana_db_name");
   await clearSession();
   sessionStorage.removeItem("customer_session");
   sessionStorage.removeItem("session");
