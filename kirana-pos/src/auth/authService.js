@@ -182,6 +182,8 @@ export async function createOwnerAccount({
 // tryBackendRegisterAndLogin logic merged into createOwnerAccount
 
 export async function login(username, password) {
+  let backendData = null;
+
   // If user is logging into an existing cloud account on a new device,
   // we must get the shopId FIRST to switch to their isolated namespace.
   if (navigator.onLine && API_BASE) {
@@ -193,9 +195,9 @@ export async function login(username, password) {
         signal: AbortSignal.timeout(5000)
       });
       if (loginRes.ok) {
-        const data = await loginRes.json();
-        if (data.shop?.id) {
-          localStorage.setItem("kirana_db_name", `kirana_pos_${data.shop.id}`);
+        backendData = await loginRes.json();
+        if (backendData.shop?.id) {
+          localStorage.setItem("kirana_db_name", `kirana_pos_${backendData.shop.id}`);
         }
       }
     } catch (e) {
@@ -206,18 +208,28 @@ export async function login(username, password) {
   let user = await getUserByUsername(username);
 
   // If still not found locally but backend succeeded, we must recreate the local user
-  if (!user && navigator.onLine && API_BASE) {
+  if (!user && backendData) {
     try {
       const hashed = await hashPassword(password);
+      const ownerName = backendData.shop?.owner_name || "Shop Owner";
+      
       user = {
         id: crypto.randomUUID(),
-        name: "Shop Owner",
+        name: ownerName,
         username,
         password: hashed,
         role: ROLES.OWNER,
         createdAt: Date.now()
       };
       await saveUser(user);
+      
+      await saveShopSettings({
+        ownerPhone: username,
+        ownerName: ownerName,
+        shopName: backendData.shop?.shop_name || `${ownerName}'s Shop`,
+        backendToken: backendData.token || null,
+        backendShopId: backendData.shop?.id || null
+      });
     } catch(e) {}
   }
 
