@@ -202,7 +202,6 @@ export async function renderShopSettings(container) {
       }
 
       const shopId = data.shop?.id || null;
-      if (shopId) localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
       const current = (await getShopSettings()) || {};
       await saveShopSettings({
         ...current,
@@ -224,7 +223,6 @@ export async function renderShopSettings(container) {
   document.getElementById("btn-disconnect").onclick = async () => {
     const current = (await getShopSettings()) || {};
     await saveShopSettings({ ...current, backendToken: null, backendPhone: null, backendShopId: null });
-    localStorage.removeItem("kirana_db_name");
     showToast("Disconnected from cloud sync.", "info");
     setTimeout(() => renderShopSettings(container), 300);
   };
@@ -285,7 +283,6 @@ export async function renderShopSettings(container) {
       }
 
       const shopId = loginData.shop?.id || null;
-      if (shopId) localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
       const current = (await getShopSettings()) || {};
       await saveShopSettings({
         ...current,
