@@ -6,6 +6,12 @@ export async function renderCustomerLogin(container) {
   
   if (shopId) {
     localStorage.setItem("kirana_db_name", `kirana_pos_${shopId}`);
+  } else {
+    // Fallback to the last shop accessed on this device
+    const lastDb = localStorage.getItem("last_shop_db");
+    if (lastDb) {
+      localStorage.setItem("kirana_db_name", lastDb);
+    }
   }
 
   container.innerHTML = `

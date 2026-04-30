@@ -386,7 +386,7 @@ export async function renderAddSale(container) {
         await import("../services/loyaltyEngine.js");
 
       const shopSettings = await getShopSettings();
-      const shopId = shopSettings?.shopId;
+      const shopId = shopSettings?.backendShopId;
 
       if (customer?.id && shopId) {
 
