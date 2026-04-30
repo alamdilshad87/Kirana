@@ -31,10 +31,10 @@ export async function renderDashboard() {
     <section class="dashboard">
       <div class="page-header-simple">
         <h1>Dashboard</h1>
-        <p>Here's what's happening at your store today</p>
+        <p>Real-time analytics for your business</p>
       </div>
 
-      <div class="kpi-row">
+      <div class="kpi-grid">
         <div class="kpi-card-simple">
           ${kpiIcons.sales}
           <div class="kpi-info">
@@ -70,9 +70,8 @@ export async function renderDashboard() {
         <div class="kpi-card-simple">
           ${kpiIcons.health}
           <div class="kpi-info">
-            <p class="kpi-label-small">BUSINESS CREDIT HEALTH</p>
+            <p class="kpi-label-small">CREDIT HEALTH</p>
             <h2 class="kpi-value-small">${mhi.score}</h2>
-            <span class="health-sub">No Activity</span>
           </div>
         </div>
       </div>
@@ -80,9 +79,9 @@ export async function renderDashboard() {
       <div class="insights-section glass-card">
         ${kpiIcons.bot}
         <div class="insights-content">
-          <p class="insight-label">INSIGHTS</p>
+          <p class="insight-label">AI INSIGHTS</p>
           <div class="insight-bubble">
-            ${insights.length > 0 ? insights[0] : "No sales recorded today. Try attracting customers with offers."}
+            ${insights.length > 0 ? insights[0] : "No sales data available for today. Complete more transactions to see insights."}
           </div>
         </div>
       </div>
@@ -93,59 +92,63 @@ export async function renderDashboard() {
       .page-header-simple h1 { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
       .page-header-simple p { font-size: 13px; color: #64748b; }
 
-      .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+      .kpi-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+        gap: 20px; 
+        margin-bottom: 32px; 
+      }
+      
       .kpi-card-simple {
-        flex: 1;
-        min-width: 200px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 20px;
+        border-radius: 20px;
+        padding: 24px;
         display: flex;
         align-items: center;
         gap: 16px;
+        transition: transform 0.2s ease;
       }
+      .kpi-card-simple:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); }
+      
       .kpi-icon-square {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 22px;
+        flex-shrink: 0;
       }
-      .kpi-label-small { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-      .kpi-value-small { font-size: 20px; font-weight: 800; color: #fff; }
-      .health-sub { font-size: 10px; color: #475569; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+      .kpi-label-small { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+      .kpi-value-small { font-size: 22px; font-weight: 800; color: #fff; }
 
       .insights-section {
         display: flex;
         align-items: flex-start;
-        gap: 16px;
-        padding: 24px;
-        background: rgba(255,255,255,0.02);
+        gap: 20px;
+        padding: 32px;
+        background: rgba(139,92,246,0.03);
+        border: 1px solid rgba(139,92,246,0.1);
       }
       .insight-bot-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: rgba(139,92,246,0.15);
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(139,92,246,0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 20px;
         flex-shrink: 0;
       }
-      .insight-label { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 8px; letter-spacing: 1px; }
+      .insight-label { font-size: 11px; font-weight: 800; color: #8b5cf6; margin-bottom: 12px; letter-spacing: 1.2px; }
       .insight-bubble {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 12px;
-        padding: 12px 16px;
-        color: #94a3b8;
-        font-size: 13px;
-        line-height: 1.5;
-        max-width: 400px;
+        color: #e2e8f0;
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 600px;
       }
     </style>
   `;

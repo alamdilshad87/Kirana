@@ -1,117 +1,145 @@
-/* =====================================================
-   GLOBAL RESPONSIVE FIXES
-   Handles component-specific adjustments for all screens.
-===================================================== */
+/* ==========================================================================
+   ENTERPRISE RESPONSIVE DESIGN SYSTEM
+   Kirana POS — Final Production Grade
+   Breakpoints: Mobile (<768px), Tablet (768px-1024px), Desktop (>1024px)
+========================================================================== */
 
-/* ── Dashboard KPI Row ── */
-.kpi-row {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  width: 100%;
+:root {
+  --header-h: 64px;
+  --safe-area-inset: 20px;
 }
 
-@media (max-width: 640px) {
-  .kpi-row {
-    grid-template-columns: 1fr;
+/* ── 1. GLOBAL SCALING ── */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-w: 0px;
   }
+}
+
+/* ── 2. SIDEBAR & DRAWER LOGIC ── */
+@media (min-width: 1025px) {
+  .mobile-header, .mobile-drawer { display: none !important; }
+  .sidebar { display: flex !important; }
+}
+
+@media (max-width: 1024px) {
+  .sidebar { display: none !important; }
   
-  .kpi-card-simple {
-    padding: 16px;
-  }
-
-  .page-header-simple h1 {
-    font-size: 22px;
-  }
-}
-
-/* ── Add Transaction Page ── */
-@media (max-width: 640px) {
-  .add-transaction-page {
-    padding-top: 20px;
-    padding-bottom: 40px;
-  }
-
-  .transaction-container {
-    max-width: 100% !important;
-    padding: 24px 20px !important;
-    border-radius: 16px;
-    margin: 0 4px;
-  }
-
-  .transaction-title {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-
-  .trans-tab {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-}
-
-/* ── General Glass Cards ── */
-.glass-card {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* ── Tables ── */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-bottom: 20px;
-}
-
-table {
-  min-width: 600px; /* Force scroll on small screens */
-}
-
-/* ── Mobile Header & Drawer ── */
-@media (max-width: 768px) {
   .mobile-header {
     display: flex !important;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: rgba(8, 13, 26, 0.85);
-    backdrop-filter: blur(16px);
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: rgba(8, 13, 26, 0.95);
+    backdrop-filter: blur(25px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 1000;
     align-items: center;
-    padding: 0 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 var(--safe-area-inset);
     justify-content: space-between;
   }
 
   .app-right-panel {
-    margin-top: 56px !important;
+    margin-top: var(--header-h) !important;
+    width: 100% !important;
   }
 
-  .sync-status {
-    top: 56px !important;
-  }
-}
-
-/* ── Welcome Page ── */
-@media (max-width: 480px) {
-  .welcome-card {
-    padding: 40px 24px !important;
-  }
-
-  .welcome-title {
-    font-size: 26px !important;
-  }
-
-  .welcome-feature {
-    padding: 4px 10px !important;
-    font-size: 10px !important;
+  .main-content {
+    padding: var(--safe-area-inset) !important;
   }
 }
 
-/* ── Form Inputs ── */
-input, select, textarea {
-  font-size: 16px !important; /* Prevents auto-zoom on iOS */
+/* ── 3. GRID & CARD RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  /* KPI Grid Stacking */
+  .kpi-row, .grid-3, .grid-4, .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Page Headers */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 16px;
+    margin-bottom: 24px !important;
+  }
+
+  /* Full Width Buttons for Mobile */
+  .btn-primary, .btn-secondary, .p-save-btn {
+    width: 100% !important;
+    justify-content: center;
+    padding: 16px !important;
+  }
+}
+
+/* ── 4. ADD SALE PAGE (Special Handling) ── */
+@media (max-width: 600px) {
+  .pro-card {
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .p-footer-row {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .p-total-bar, .p-action-bar {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 24px 16px !important;
+  }
+
+  .total-value {
+    font-size: 32px !important;
+  }
+}
+
+/* ── 5. TABLE SCROLLING PROTECTION ── */
+.table-container, .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.1);
+  padding: 1px;
+}
+
+table {
+  min-width: 800px; /* Essential for data visibility */
+}
+
+/* ── 6. DRAWER OVERLAY ── */
+body.drawer-open .main-content {
+  filter: brightness(0.3) blur(4px);
+  pointer-events: none;
+  transform: scale(0.98);
+  transition: all 0.3s ease;
+}
+
+/* ── 7. INPUT ACCESSIBILITY (iOS Fix) ── */
+input, select, textarea, button {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
+
+/* ── 8. MODAL BEHAVIOR ── */
+@media (max-width: 768px) {
+  .modal-box, .upi-modal {
+    width: 95% !important;
+    margin: 10px !important;
+    padding: 24px 16px !important;
+  }
+}
+
+/* ── 9. UTILITIES ── */
+.hide-mobile { display: none !important; }
+@media (min-width: 769px) {
+  .hide-mobile { display: block !important; }
+  .show-mobile { display: none !important; }
 }
