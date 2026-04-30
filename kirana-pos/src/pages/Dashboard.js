@@ -36,7 +36,6 @@ export async function renderDashboard() {
       <div class="kpi-grid">
 
         <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(34,197,94,0.12);color:#22c55e">💰</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.totalSales")}</p>
             <h2 class="kpi-value" data-val="${totalSales}">₹${totalSales}</h2>
@@ -44,7 +43,6 @@ export async function renderDashboard() {
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(99,102,241,0.12);color:#818cf8">🛍️</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.transactions")}</p>
             <h2 class="kpi-value" data-val="${transactionCount}">${transactionCount}</h2>
@@ -52,7 +50,6 @@ export async function renderDashboard() {
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b">💳</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.creditSales")}</p>
             <h2 class="kpi-value" data-val="${creditTotal}">₹${creditTotal}</h2>
@@ -60,7 +57,6 @@ export async function renderDashboard() {
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(20,184,166,0.12);color:#14b8a6">📈</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.todayProfit")}</p>
             <h2 class="kpi-value" data-val="${todayProfit}">₹${todayProfit}</h2>
@@ -68,16 +64,14 @@ export async function renderDashboard() {
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(239,68,68,0.12);color:${mhiColor}">⭐</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.creditHealth")}</p>
             <h2 class="kpi-value" style="color:${mhiColor}" data-val="${mhi.score}">${mhi.score}</h2>
-            <span class="kpi-badge">${mhi.label}</span>
+            <span class="kpi-badge" style="background:${mhiColor}">${mhi.label}</span>
           </div>
         </div>
 
         <div class="kpi-card kpi-card--insights">
-          <div class="kpi-icon" style="background:rgba(99,102,241,0.12);color:#818cf8">🤖</div>
           <div class="kpi-body">
             <p class="kpi-label">${t("dashboard.insights")}</p>
             <ul class="insights-list">

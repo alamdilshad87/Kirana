@@ -26,7 +26,7 @@ export async function renderLayout(contentHtml) {
       <!-- ── MOBILE HEADER ── -->
       <div class="mobile-header">
         <button id="menu-toggle" class="menu-btn" aria-label="Open menu">☰</button>
-        <div class="app-title">🛒 Kirana POS</div>
+        <div class="app-title">KIRANA POS</div>
         <div class="sync-mini" id="sync-mini-dot">${online ? "🟢" : "🟠"}</div>
       </div>
 
@@ -41,7 +41,7 @@ export async function renderLayout(contentHtml) {
 
         <!-- Brand Header -->
         <div class="sidebar-brand">
-          <div class="sidebar-brand-icon">🛒</div>
+          <div class="sidebar-brand-icon">K</div>
           <div class="sidebar-brand-text">
             <span class="sidebar-brand-name">Kirana POS</span>
             <span class="sidebar-brand-sub">Management System</span>
@@ -59,10 +59,10 @@ export async function renderLayout(contentHtml) {
           <!-- MAIN NAV -->
           <div class="nav-section-label">Main</div>
           <a href="#" data-page="dashboard">
-            <span class="nav-icon">📊</span>${t("sidebar.dashboard")}
+            ${t("sidebar.dashboard")}
           </a>
           <a href="#" data-page="add-sale">
-            <span class="nav-icon">🛍️</span>${t("sidebar.addSale")}
+            ${t("sidebar.addSale")}
           </a>
 
           <!-- INVENTORY -->
@@ -70,10 +70,10 @@ export async function renderLayout(contentHtml) {
           <div class="sidebar-divider"></div>
           <div class="nav-section-label">Inventory</div>
           <a href="#" data-page="stock">
-            <span class="nav-icon">📦</span>${t("sidebar.stock")}
+            ${t("sidebar.stock")}
           </a>
           <a href="#" data-page="bill-scanner">
-            <span class="nav-icon">📷</span>AI Bill Scanner
+            AI Bill Scanner
           </a>
           ` : ""}
 
@@ -82,17 +82,17 @@ export async function renderLayout(contentHtml) {
           <div class="sidebar-divider"></div>
           <div class="nav-section-label">Finance</div>
           <a href="#" data-page="reports">
-            <span class="nav-icon">📈</span>${t("sidebar.reports")}
+            ${t("sidebar.reports")}
           </a>
           <a href="#" data-page="credit">
-            <span class="nav-icon">⭐</span>${t("sidebar.creditScore")}
+            ${t("sidebar.creditScore")}
           </a>
           <a href="#" data-page="ledger">
-            <span class="nav-icon">📒</span>${t("sidebar.creditLedger")}
+            ${t("sidebar.creditLedger")}
           </a>
           ${(isOwner || isManager) ? `
           <a href="#" data-page="credit-loan">
-            <span class="nav-icon">💸</span>${t("sidebar.creditLoan")}
+            ${t("sidebar.creditLoan")}
           </a>` : ""}
           ` : ""}
 
@@ -101,23 +101,23 @@ export async function renderLayout(contentHtml) {
           <div class="sidebar-divider"></div>
           <div class="nav-section-label">Admin</div>
           <a href="#" data-page="manage-staff">
-            <span class="nav-icon">👥</span>${t("sidebar.manageStaff")}
+            ${t("sidebar.manageStaff")}
           </a>
           <a href="#" data-page="coupon-manager">
-            <span class="nav-icon">🎟️</span>${t("sidebar.coupons")}
+            ${t("sidebar.coupons")}
           </a>
           <a href="#" data-page="audit-log">
-            <span class="nav-icon">🔍</span>${t("sidebar.auditLog")}
+            ${t("sidebar.auditLog")}
           </a>
           <a href="#" data-page="shop-settings">
-            <span class="nav-icon">⚙️</span>${t("sidebar.shopSettings")}
+            ${t("sidebar.shopSettings")}
           </a>
           ` : ""}
 
           <!-- LOGOUT -->
           <div class="sidebar-divider"></div>
           <a href="#" data-page="logout" class="logout-link">
-            <span class="nav-icon">🚪</span>${t("sidebar.logout")}
+            ${t("sidebar.logout")}
           </a>
         </nav>
 

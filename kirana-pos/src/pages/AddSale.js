@@ -1,421 +1,265 @@
 import { renderLayout } from "../components/Layout";
-import { saveSale, getAllStock, processSale,getShopSettings } from "../services/db";
-import { navigate } from "../app";
+import { getStock, saveSale, processSale, getShopSettings } from "../services/db";
 import { showToast } from "../utils/toast";
-import { searchStock } from "../utils/helpers";
-import { buildFinancialEvent } from "../services/financialEvent";
-import { evaluateCreditDecision } from "../services/creditAdvisor";
 import { t } from "../i18n/i18n";
-import { logAudit } from "../services/auditLog";
 
-import {
-  ACCOUNT_TYPE,
-  MONEY_DIRECTION,
-  STOCK_EFFECT,
-  LIABILITY_EFFECT
-} from "../services/transactionTypes";
+export async function renderAddSale() {
+  const stock = await getStock();
+  const shopSettings = await getShopSettings();
+  const shopId = shopSettings?.backendShopId;
 
-let cartItems = [];
-let saleMode = "amount";
-let selectedPayment = null;
+  let cartItems = [];
+  let saleMode = "amount"; // "amount" or "items"
+  let selectedPayment = "cash";
 
+  const app = document.getElementById("app");
 
-
-function addToCart(stockItem, qty = 1) {
-  const existing = cartItems.find(i => i.itemId === stockItem.id);
-  if (existing) {
-    if (existing.qty + qty > stockItem.quantity) {
-      showToast(t("addSale.notEnoughStock"), "error");
-      return;
-    }
-    existing.qty += qty;
-  } else {
-    cartItems.push({
-      itemId: stockItem.id,
-      name: stockItem.name,
-      price: stockItem.price,
-      qty
-    });
-  }
-}
-
-function removeFromCart(id) {
-  cartItems = cartItems.filter(i => i.itemId !== id);
-}
-
-function calculateTotal() {
-  return cartItems.reduce((sum, i) => sum + i.price * i.qty, 0);
-}
-
-export async function renderAddSale(container) {
-
-  cartItems = [];
-  saleMode = "amount";
-  selectedPayment = null;
-
-  const stock = await getAllStock();
-
-  container.innerHTML = await renderLayout(`
-    <section class="add-sale">
-      <div class="glass-card">
-        <h1>${t("addSale.title")}</h1>
-
+  const content = `
+    <section class="add-sale-page">
+      <div class="page-header">
+        <h1>Add New Sale</h1>
         <div class="mode-switch">
-          <button id="mode-amount" class="btn-option active">${t("addSale.quickSale")}</button>
-          <button id="mode-items" class="btn-option">${t("addSale.itemSale")}</button>
+          <button id="mode-amount" class="active">Quick Amount</button>
+          <button id="mode-items">Itemized Sale</button>
+        </div>
+      </div>
+
+      <div class="sale-container">
+        
+        <!-- LEFT: Items / Amount -->
+        <div class="sale-left">
+          <div id="amount-section" class="glass-card">
+            <div class="input-group">
+              <label>Sale Amount</label>
+              <div class="amount-field">
+                <span>₹</span>
+                <input id="amount" type="number" placeholder="0.00" step="0.01" />
+              </div>
+            </div>
+          </div>
+
+          <div id="item-sale-section" class="glass-card" style="display:none">
+            <div class="input-group">
+              <label>Select Products</label>
+              <div class="stock-search-wrapper">
+                <input id="stock-search" placeholder="Search stock..." />
+              </div>
+            </div>
+            <div id="stock-list" class="stock-list">
+              ${stock.map(s => `
+                <div class="stock-item" data-id="${s.id}">
+                  <div class="stock-item-info">
+                    <span class="stock-item-name">${s.name}</span>
+                    <span class="stock-item-price">₹${s.price}</span>
+                  </div>
+                  <button class="btn-add-mini" data-add="${s.id}">Add</button>
+                </div>
+              `).join("")}
+            </div>
+          </div>
         </div>
 
-        <form id="sale-form">
-          <div id="amount-section">
-            <label>${t("addSale.amount")} (₹)</label>
-            <input id="amount" type="number" placeholder="${t("addSale.enterAmount")}" />
-          </div>
+        <!-- RIGHT: Cart & Customer -->
+        <div class="sale-right">
+          <form id="sale-form">
+            <div class="glass-card cart-card">
+              <h3>Order Summary</h3>
+              <div id="cart-list" class="cart-list">
+                <p class="empty-text">No items added</p>
+              </div>
+              <div class="cart-footer">
+                <span>Total</span>
+                <span id="cart-total">₹0</span>
+              </div>
+            </div>
 
-          <div id="item-sale-section" style="display:none">
-            <input id="stock-search" placeholder="Search item..." />
-            <div id="search-results"></div>
-            <h4>Cart</h4>
-            <div id="cart-list"></div>
-            <p><strong>Total:</strong> ₹<span id="cart-total">0</span></p>
-          </div>
+            <div class="glass-card customer-card">
+              <div class="input-group">
+                <label>Payment Method</label>
+                <div class="payment-grid">
+                  <button type="button" class="btn-payment active" data-method="cash">Cash</button>
+                  <button type="button" class="btn-payment" data-method="upi">UPI</button>
+                  <button type="button" class="btn-payment" data-method="credit">Credit</button>
+                </div>
+              </div>
 
+              <div class="input-group">
+                <label>Customer Name</label>
+                <input id="customer" placeholder="John Doe (Optional)" />
+              </div>
 
+              <div class="input-group">
+                <label>Mobile Number</label>
+                <input id="customer-phone" type="tel" placeholder="9999999999" />
+              </div>
 
-          <label>${t("addSale.paymentMethod")}</label>
-          <div class="payment-options">
-            <button type="button" class="btn-option" data-method="cash">${t("addSale.cash")}</button>
-            <button type="button" class="btn-option" data-method="upi">${t("addSale.upi")}</button>
-            <button type="button" class="btn-option" data-method="credit">${t("addSale.credit")}</button>
-          </div>
+              <div id="credit-advice" class="credit-advice"></div>
 
-          <label>Customer Name</label>
-          <input id="customer" type="text" placeholder="${t("addSale.enterCustomer")}" />
-          <label>Customer Mobile Number</label>
-          <input id = "customer-phone" type="tel" placeholder="${t("addSale.enterMobileNumber")}" />
-          <div id="credit-advice" class="credit-advice hidden"></div>
-
-
-
-          <button class="btn-primary full-width" type="submit">${t("addSale.save")}</button>
-        </form>
+              <button type="submit" class="btn-primary full-width">Finalize Sale</button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
-  `);
+  `;
 
-  const amountSection    = document.getElementById("amount-section");
-  const itemSection      = document.getElementById("item-sale-section");
-  const modeAmountBtn    = document.getElementById("mode-amount");
-  const modeItemsBtn     = document.getElementById("mode-items");
+  document.querySelector(".main-content").innerHTML = content;
 
-  modeAmountBtn.onclick = () => {
+  // Cache elements
+  const amountSection = document.getElementById("amount-section");
+  const itemSection   = document.getElementById("item-sale-section");
+  const cartDiv       = document.getElementById("cart-list");
+  const cartTotal     = document.getElementById("cart-total");
+  const amountInput   = document.getElementById("amount");
+  const customerInput = document.getElementById("customer");
+  const phoneInput    = document.getElementById("customer-phone");
+  const adviceBox     = document.getElementById("credit-advice");
+
+  // Mode Switching
+  document.getElementById("mode-amount").onclick = (e) => {
     saleMode = "amount";
-    cartItems = [];
-    renderCart();
+    e.target.classList.add("active");
+    document.getElementById("mode-items").classList.remove("active");
     amountSection.style.display = "block";
     itemSection.style.display = "none";
-    modeAmountBtn.classList.add("active");
-    modeItemsBtn.classList.remove("active");
+    renderCart();
   };
 
-  modeItemsBtn.onclick = () => {
+  document.getElementById("mode-items").onclick = (e) => {
     saleMode = "items";
-    cartItems = [];
-    renderCart();
+    e.target.classList.add("active");
+    document.getElementById("mode-amount").classList.remove("active");
     amountSection.style.display = "none";
     itemSection.style.display = "block";
-    modeItemsBtn.classList.add("active");
-    modeAmountBtn.classList.remove("active");
+    renderCart();
   };
 
-  document.querySelectorAll(".payment-options .btn-option").forEach(btn => {
+  // Payment Selection
+  document.querySelectorAll(".btn-payment").forEach(btn => {
     btn.onclick = () => {
-      document.querySelectorAll(".payment-options .btn-option")
-        .forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".btn-payment").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       selectedPayment = btn.dataset.method;
       runCreditAdvisor();
     };
   });
 
-  const cartDiv = document.getElementById("cart-list");
-  const cartTotal = document.getElementById("cart-total");
-  const adviceBox = document.getElementById("credit-advice");
-  const customerInput = document.getElementById("customer");
-  const amountInput = document.getElementById("amount");
+  // Stock Search
+  document.getElementById("stock-search")?.addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll(".stock-item").forEach(el => {
+      const name = el.querySelector(".stock-item-name").textContent.toLowerCase();
+      el.style.display = name.includes(q) ? "flex" : "none";
+    });
+  });
 
-  amountInput?.addEventListener("input", runCreditAdvisor);
-  customerInput.addEventListener("input", runCreditAdvisor);
-
-
-
+  // Add to Cart
+  document.querySelectorAll("[data-add]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.add;
+      const item = stock.find(s => s.id === id);
+      const existing = cartItems.find(c => c.itemId === id);
+      if (existing) existing.qty++;
+      else cartItems.push({ itemId: id, name: item.name, price: item.price, qty: 1 });
+      renderCart();
+    };
+  });
 
   function renderCart() {
-    cartDiv.innerHTML =
-      cartItems.length === 0
-        ? "<p>No items added</p>"
-        : cartItems.map(i => `
-          <div class="cart-row">
-            <span>${i.name}</span>
-            <div class="cart-controls">
-              <button data-dec="${i.itemId}">−</button>
-              <span>${i.qty}</span>
-              <button data-inc="${i.itemId}">+</button>
+    if (saleMode === "amount") {
+      cartDiv.innerHTML = `<div class="cart-row"><span>Quick Sale</span><span>₹${amountInput.value || 0}</span></div>`;
+      cartTotal.textContent = `₹${amountInput.value || 0}`;
+    } else {
+      if (cartItems.length === 0) {
+        cartDiv.innerHTML = `<p class="empty-text">No items added</p>`;
+        cartTotal.textContent = "₹0";
+      } else {
+        let total = 0;
+        cartDiv.innerHTML = cartItems.map(i => {
+          total += i.price * i.qty;
+          return `
+            <div class="cart-row">
+              <div class="cart-row-info">
+                <span>${i.name}</span>
+                <small>₹${i.price} × ${i.qty}</small>
+              </div>
+              <div class="cart-row-total">₹${(i.price * i.qty).toFixed(2)}</div>
             </div>
-          </div>
-        `).join("");
-
-    cartTotal.textContent = calculateTotal();
-
-    cartDiv.querySelectorAll("[data-inc]").forEach(btn => {
-      btn.onclick = () => {
-        const item = stock.find(s => s.id === btn.dataset.inc);
-        addToCart(item, 1);
-        renderCart();
-      };
-    });
-
-    cartDiv.querySelectorAll("[data-dec]").forEach(btn => {
-      btn.onclick = () => {
-        const item = cartItems.find(i => i.itemId === btn.dataset.dec);
-        item.qty--;
-        if (item.qty <= 0) removeFromCart(item.itemId);
-        renderCart();
-      };
-    });
+          `;
+        }).join("");
+        cartTotal.textContent = `₹${total.toFixed(2)}`;
+      }
+    }
     runCreditAdvisor();
   }
-  async function runCreditAdvisor() {
 
-    if (selectedPayment !== "credit") {
-      adviceBox.className = "credit-advice hidden";
-      adviceBox.innerHTML = "";
+  amountInput.oninput = renderCart;
+
+  async function runCreditAdvisor() {
+    const phone = phoneInput.value.trim();
+    if (!phone || selectedPayment !== "credit") {
+      adviceBox.style.display = "none";
+      return;
+    }
+    const amount = saleMode === "amount" ? parseFloat(amountInput.value) : cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+    if (!amount) return;
+
+    adviceBox.style.display = "block";
+    adviceBox.innerHTML = `<div class="loading-advice">Checking credit health...</div>`;
+
+    const { getCreditAdvice } = await import("../services/creditAdvisor.js");
+    const advice = await getCreditAdvice(phone, amount);
+    adviceBox.innerHTML = `<div class="advice-content ${advice.risk}">${advice.message}</div>`;
+  }
+
+  phoneInput.oninput = runCreditAdvisor;
+
+  // Finalize
+  document.getElementById("sale-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const amount = saleMode === "amount" ? parseFloat(amountInput.value) : cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+    
+    if (!amount || amount <= 0) {
+      showToast("Please enter a valid amount", "error");
       return;
     }
 
     const customerName = customerInput.value.trim();
-    if (!customerName) {
-      adviceBox.className = "credit-advice hidden";
-      return;
-    }
+    const customerPhone = phoneInput.value.trim();
 
-    const amount =
-      saleMode === "items"
-        ? calculateTotal()
-        : Number(amountInput.value || 0);
-
-    if (!amount || amount <= 0) {
-      adviceBox.className = "credit-advice hidden";
-      return;
-    }
-
-    const result = await evaluateCreditDecision(customerName, amount);
-
-    if (!result) return;
-
-    adviceBox.className = `credit-advice ${result.level}`;
-
-    adviceBox.innerHTML = `
-      <strong>${result.message}</strong><br>
-      ${t("creditAdvisor.outstanding")}: ₹${result.currentOutstanding} → ₹${result.afterTransaction}<br>
-      ${t("creditAdvisor.limit")}: ₹${result.safeLimit}<br>
-      <small>${result.behaviourNote}</small>
-    `;
-  }
-
-
-  const searchInput = document.getElementById("stock-search");
-  const resultsDiv = document.getElementById("search-results");
-
-  searchInput.oninput = () => {
-    const q = searchInput.value.trim();
-    if (!q) return (resultsDiv.innerHTML = "");
-
-    const results = searchStock(stock, q);
-
-    resultsDiv.innerHTML = `
-      <div class="search-dropdown">
-        ${results.map(i => `
-          <div class="search-item">
-            <div>
-              <strong>${i.name}</strong>
-              <small>₹${i.price}</small>
-            </div>
-            <button data-id="${i.id}">Add</button>
-          </div>
-        `).join("")}
-      </div>
-    `;
-
-    resultsDiv.querySelectorAll("button").forEach(btn => {
-      btn.onclick = () => {
-        addToCart(stock.find(s => s.id === btn.dataset.id));
-        renderCart();
-        searchInput.value = "";
-        resultsDiv.innerHTML = "";
-      };
-    });
-  };
-
-  document.getElementById("sale-form").onsubmit = async e => {
-    e.preventDefault();
-
-    if (!selectedPayment) {
-      showToast(t("addSale.selectPayment"), "error");
-      return;
-    }
-
-
-    let amount =
-      saleMode === "items"
-        ? calculateTotal()
-        : Number(document.getElementById("amount").value || 0);
-
-    if (!amount || amount <= 0) {
-      showToast(t("addSale.invalidAmount"), "error");
-      return;
-    }
-
-    const customerName =
-      document.getElementById("customer").value.trim() || null;
-
-    const customerPhone =
-      document.getElementById("customer-phone")?.value.trim() || null;
-
-    /*==================================
-      Customer identity
-    ====================================*/
     let customer = null;
-
-    if (customerName) {
-      const { resolveCustomerIdentity } =
-        await import("../services/customerIdentityService.js");
-      customer = await resolveCustomerIdentity({
-        name: customerName,
-        phone: customerPhone
-      });
+    if (customerName || customerPhone) {
+      const { resolveCustomerIdentity } = await import("../services/customerIdentityService.js");
+      customer = await resolveCustomerIdentity({ name: customerName, phone: customerPhone });
     }
-
-    let accountType = ACCOUNT_TYPE.ITEM_SALE;
-    let moneyDirection = MONEY_DIRECTION.NONE;
-    let stockEffect = STOCK_EFFECT.NONE;
-    let liabilityEffect = LIABILITY_EFFECT.NONE;
-    let referenceSource = selectedPayment;
-
-    if (saleMode === "items") {
-      accountType = ACCOUNT_TYPE.ITEM_SALE;
-      stockEffect = STOCK_EFFECT.OUT;
-      if (selectedPayment === "credit")
-        liabilityEffect = LIABILITY_EFFECT.INCREASE_GOODS_DUE;
-      else
-        moneyDirection = MONEY_DIRECTION.IN;
-    } else {
-      if (selectedPayment === "credit") {
-        accountType = ACCOUNT_TYPE.LOAN_GIVEN;
-        moneyDirection = MONEY_DIRECTION.OUT;
-        liabilityEffect = LIABILITY_EFFECT.INCREASE_LOAN;
-        referenceSource = "loan";
-      } else {
-        accountType = ACCOUNT_TYPE.ADVANCE_DEPOSIT;
-        moneyDirection = MONEY_DIRECTION.IN;
-        liabilityEffect = LIABILITY_EFFECT.INCREASE_ADVANCE;
-        referenceSource = "advance";
-      }
-    }
-
 
     const sale = {
-       id: crypto.randomUUID(),
-       amount:amount,
-       items: saleMode === "items" ? structuredClone(cartItems) : [],
-       paymentMethod: selectedPayment,
-       referenceSource,
-       accountType,
-       moneyDirection,
-       stockEffect,
-       liabilityEffect,
-       customerId: customer?.id || null,
-       customerName: customer?.displayName || customerName,
-       transactionType: "sale",
-       financialEvent: buildFinancialEvent({
-         accountType,
-         moneyDirection,
-         stockEffect,
-         customerName,
-         amount,
-        }),
-       date: new Date().toLocaleDateString(),
-       timestamp: Date.now(),
-       estimatedProfit: 0
-      };
-      if (selectedPayment === "upi") {
-        const { openUPIPayment } = await import("../components/UPIPaymentOverlay.js");
-        const confirmed = await openUPIPayment(amount);
-        if (!confirmed) {
-          showToast("UPI payment cancelled", "error");
-          return;
-        }
-      }
+      id: crypto.randomUUID(),
+      amount,
+      paymentMethod: selectedPayment,
+      accountType: saleMode === "amount" ? "QUICK_SALE" : "ITEM_SALE",
+      customerName,
+      customerPhone,
+      items: cartItems,
+      saleDate: new Date().toISOString()
+    };
 
-    // Process and save
-    if(accountType === ACCOUNT_TYPE.ITEM_SALE)
-        await processSale(sale);
-      else
-        await saveSale(sale);
+    if (saleMode === "items") await processSale(sale);
+    else await saveSale(sale);
 
-      const { updateCustomerLoyalty } = 
-        await import("../services/loyaltyEngine.js");
-      if(customer?.id) {
-        await updateCustomerLoyalty(
-          customer.id,
-          sale.amount
-        );
-      }
-      const { evaluateAutoCoupon } = 
-       await import("../services/autoCouponEngine.js")
-      if(customer?.id) {
-        await evaluateAutoCoupon (
-          customer.id,
-          sale.amount
-        );
-      }
+    // Update Loyalty
+    if (customer?.id) {
+      const { updateCustomerLoyalty } = await import("../services/loyaltyEngine.js");
+      await updateCustomerLoyalty(customer.id, amount);
 
-      const { linkCustomerToShop, updateCustomerShopStats } =
-        await import("../services/customerShopService.js");
-
-      const { getCustomerLoyalty } =
-        await import("../services/loyaltyEngine.js");
-
-      const shopSettings = await getShopSettings();
-      const shopId = shopSettings?.backendShopId;
-
-      if (customer?.id && shopId) {
-
+      if (shopId) {
+        const { linkCustomerToShop, updateCustomerShopStats } = await import("../services/customerShopService.js");
         await linkCustomerToShop(customer.id, shopId);
-
-        await updateCustomerShopStats({
-          customerId: customer.id,
-          shopId,
-          amount: sale.amount
-        });
-
+        await updateCustomerShopStats({ customerId: customer.id, shopId, amount });
+      }
     }
 
-    await logAudit({
-      action: "SALE_CREATED",
-      module: "sale",
-      targetId: sale.id,
-      metadata: {
-        amount:        sale.amount,
-        payment:       sale.paymentMethod,
-        customer:      sale.customerName || null,
-        items:         (sale.items || []).map(i => ({ name: i.name, qty: i.qty, quantity: i.qty }))
-      }
-    });
-
-    showToast("Transaction saved", "success");
-    navigate("dashboard"); 
-    setTimeout(() => {
-      window.dispatchEvent(new Event("saleUpdated"));
-    },50);
+    showToast("Sale completed successfully!", "success");
+    renderAddSale(); // Reset
   };
 }
